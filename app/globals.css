@@ -22,6 +22,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  body.pwa {
+    padding-bottom: 24px;
+  }
+
   input,
   select,
   textarea {

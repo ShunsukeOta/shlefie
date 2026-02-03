@@ -7,6 +7,9 @@ export default function ServiceWorker() {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      document.body.classList.add("pwa");
+    }
   }, []);
 
   return null;
