@@ -24,10 +24,11 @@ export type Book = {
 export type LogItem = {
   id: string;
   title: string;
-  status: string;
-  statusKey: BookStatusKey;
+  status?: string;
+  statusKey?: BookStatusKey;
   time: string;
   imageUrl?: string;
+  message: string;
 };
 
 type LibraryContextValue = {
@@ -47,6 +48,7 @@ type LibraryContextValue = {
     memo?: string;
   }) => void;
   updateBook: (id: string, input: Partial<Book>) => void;
+  removeBook: (id: string) => void;
 };
 
 const LibraryContext = createContext<LibraryContextValue | null>(null);
@@ -178,27 +180,30 @@ const seedBooks: Book[] = [
 const seedLogs: LogItem[] = [
   {
     id: "log-1",
+    title: "ノルウェイの森",
     status: "読了",
     statusKey: "done",
-    title: "ノルウェイの森",
     time: "2時間前",
     imageUrl: "https://picsum.photos/seed/shelfie-log-1/360/480",
+    message: "ノルウェイの森を「読了」に変更しました。",
   },
   {
     id: "log-2",
+    title: "人間失格",
     status: "積読",
     statusKey: "stack",
-    title: "人間失格",
     time: "昨日",
     imageUrl: "https://picsum.photos/seed/shelfie-log-2/360/480",
+    message: "人間失格を本棚に登録しました。",
   },
   {
     id: "log-3",
+    title: "羅生門",
     status: "読書中",
     statusKey: "reading",
-    title: "羅生門",
     time: "2日前",
     imageUrl: "https://picsum.photos/seed/shelfie-log-3/360/480",
+    message: "羅生門を本棚から削除しました。",
   },
 ];
 
@@ -293,39 +298,87 @@ export default function LibraryProvider({ children }: LibraryProviderProps) {
         statusKey,
         time: "たった今",
         imageUrl: input.imageUrl,
+        message: `${title}を本棚に登録しました。`,
       },
       ...current,
     ]);
   };
 
   const updateBook: LibraryContextValue["updateBook"] = (id, input) => {
-    setBooks((current) =>
-      current.map((book) =>
-        book.id === id
-          ? {
-              ...book,
-              ...input,
-              title: input.title ?? book.title,
-              author: input.author ?? book.author,
-              statusKey: input.statusKey ?? book.statusKey,
-              status:
-                input.statusKey === "unread"
-                  ? "未読"
-                  : input.statusKey === "stack"
-                    ? "積読"
-                    : input.statusKey === "reading"
-                      ? "読書中"
-                      : input.statusKey === "done"
-                        ? "読了"
-                        : book.status,
-            }
-          : book
-      )
-    );
+    setBooks((current) => {
+      let prevStatusKey: BookStatusKey | undefined;
+      let prevTitle = "";
+      const next = current.map((book) => {
+        if (book.id !== id) return book;
+        prevStatusKey = book.statusKey;
+        prevTitle = book.title;
+        const nextStatusKey = input.statusKey ?? book.statusKey;
+        return {
+          ...book,
+          ...input,
+          title: input.title ?? book.title,
+          author: input.author ?? book.author,
+          statusKey: nextStatusKey,
+          status:
+            nextStatusKey === "unread"
+              ? "未読"
+              : nextStatusKey === "stack"
+                ? "積読"
+                : nextStatusKey === "reading"
+                  ? "読書中"
+                  : "読了",
+        };
+      });
+
+      if (input.statusKey && input.statusKey !== prevStatusKey) {
+        const status =
+          input.statusKey === "unread"
+            ? "未読"
+            : input.statusKey === "stack"
+              ? "積読"
+              : input.statusKey === "reading"
+                ? "読書中"
+                : "読了";
+        setLogs((currentLogs) => [
+          {
+            id: `log-${Date.now()}`,
+            title: input.title ?? prevTitle ?? "本",
+            status,
+            statusKey: input.statusKey,
+            time: "たった今",
+            message: `${input.title ?? prevTitle ?? "本"}を「${status}」に変更しました。`,
+          },
+          ...currentLogs,
+        ]);
+      }
+
+      return next;
+    });
+  };
+
+  const removeBook: LibraryContextValue["removeBook"] = (id) => {
+    setBooks((current) => {
+      const target = current.find((book) => book.id === id);
+      if (target) {
+        setLogs((logs) => [
+          {
+            id: `log-${Date.now()}`,
+            title: target.title,
+            status: target.status,
+            statusKey: target.statusKey,
+            time: "たった今",
+            imageUrl: target.imageUrl,
+            message: `${target.title}を本棚から削除しました。`,
+          },
+          ...logs,
+        ]);
+      }
+      return current.filter((book) => book.id !== id);
+    });
   };
 
   const value = useMemo(
-    () => ({ books, logs, addBook, updateBook }),
+    () => ({ books, logs, addBook, updateBook, removeBook }),
     [books, logs]
   );
 

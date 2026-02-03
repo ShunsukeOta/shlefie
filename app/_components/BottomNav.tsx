@@ -67,7 +67,7 @@ export default function BottomNav({ active }: BottomNavProps) {
   ];
 
   return (
-    <div className="fixed bottom-8 left-1/2 z-10 flex w-[min(92vw,420px)] -translate-x-1/2 items-center gap-2">
+    <div className="fixed bottom-6 left-1/2 z-10 flex w-[min(92vw,420px)] -translate-x-1/2 items-center gap-2">
       <nav className="flex h-16 flex-1 justify-between gap-3 rounded-full border border-[#e6e6e6] bg-white px-1.5 py-1">
         {items.map((item) => (
           <Link

@@ -5,7 +5,7 @@ import BottomNav from "../_components/BottomNav";
 import TopBar from "../_components/TopBar";
 import { useLibrary } from "../_components/LibraryProvider";
 
-const weekly = [
+const weeklyBase = [
   { label: "月", read: 2, add: 1 },
   { label: "火", read: 1, add: 2 },
   { label: "水", read: 3, add: 1 },
@@ -15,7 +15,7 @@ const weekly = [
   { label: "日", read: 0, add: 1 },
 ];
 
-const monthly = Array.from({ length: 30 }, (_, index) => ({
+const monthlyBase = Array.from({ length: 30 }, (_, index) => ({
   label: `${index + 1}`,
   read: [1, 0, 2, 3, 1, 4, 2, 1, 0, 3, 2, 4, 1, 2, 0, 3, 1, 2, 4, 2, 1, 3, 0, 2, 1, 4, 2, 1, 3, 2][
     index
@@ -25,7 +25,7 @@ const monthly = Array.from({ length: 30 }, (_, index) => ({
   ],
 }));
 
-const yearly = [
+const yearlyBase = [
   { label: "1月", read: 12, add: 8 },
   { label: "2月", read: 9, add: 5 },
   { label: "3月", read: 14, add: 10 },
@@ -127,6 +127,29 @@ function ChartCard({ title, data }: SeriesProps) {
 export default function SummaryPage() {
   const { books } = useLibrary();
   const [range, setRange] = useState<"week" | "month" | "year">("week");
+
+  const scaleSeries = (
+    base: { label: string; read: number; add: number }[],
+    total: number
+  ) => {
+    const baseTotal = base.reduce((sum, item) => sum + item.read + item.add, 0) || 1;
+    const factor = total / baseTotal;
+    return base.map((item) => ({
+      label: item.label,
+      read: Math.max(0, Math.round(item.read * factor)),
+      add: Math.max(0, Math.round(item.add * factor)),
+    }));
+  };
+
+  const weekly = useMemo(() => scaleSeries(weeklyBase, books.length), [books.length]);
+  const monthly = useMemo(
+    () => scaleSeries(monthlyBase, books.length * 4),
+    [books.length]
+  );
+  const yearly = useMemo(
+    () => scaleSeries(yearlyBase, books.length * 12),
+    [books.length]
+  );
 
   const totals = useMemo(() => {
     const counts = {

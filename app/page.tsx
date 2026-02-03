@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import BottomNav from "./_components/BottomNav";
 import TopBar from "./_components/TopBar";
@@ -39,6 +39,13 @@ export default function Home() {
     memo: "",
     imageUrl: "",
   });
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [scrollThumb, setScrollThumb] = useState({
+    height: 0,
+    top: 0,
+    visible: false,
+  });
+  const [scrollHeight, setScrollHeight] = useState(0);
 
   const statusOptions = [
     { value: "all", label: "すべて" },
@@ -54,7 +61,7 @@ export default function Home() {
     { value: "author", label: "著者" },
   ] as const;
 
-  const { books, updateBook } = useLibrary();
+  const { books, updateBook, removeBook } = useLibrary();
 
   const displayValue = (value?: string) =>
     value && value.trim().length > 0 ? value : "-";
@@ -73,6 +80,13 @@ export default function Home() {
     }
     return [...base].sort((a, b) => a.author.localeCompare(b.author));
   }, [books, statusFilter, sortBy]);
+
+  useEffect(() => {
+    document.body.classList.add("no-scroll");
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
+  }, []);
 
   useEffect(() => {
     if (activeSheet) {
@@ -129,8 +143,43 @@ export default function Home() {
     return undefined;
   }, [bookVisible, activeBook]);
 
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const updateThumb = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      setScrollHeight(scrollHeight);
+      if (scrollHeight <= clientHeight) {
+        setScrollThumb({ height: 0, top: 0, visible: false });
+        return;
+      }
+      const trackHeight = clientHeight;
+      const minThumb = 24;
+      const thumbHeight = Math.max(
+        (clientHeight / scrollHeight) * trackHeight,
+        minThumb
+      );
+      const maxTop = trackHeight - thumbHeight;
+      const top =
+        (scrollTop / (scrollHeight - clientHeight)) * maxTop || 0;
+      setScrollThumb({ height: thumbHeight, top, visible: true });
+    };
+
+    const onScroll = () => updateThumb();
+    const onResize = () => updateThumb();
+
+    updateThumb();
+    container.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [layout, filteredBooks.length]);
+
   return (
-    <div className="min-h-screen pb-[84px]">
+    <div className="h-screen overflow-hidden">
       <TopBar
         title="本棚"
         rightSlot={
@@ -154,7 +203,7 @@ export default function Home() {
           </Link>
         }
       />
-      <main className="mx-auto max-w-[480px] px-4 pb-7 text-left">
+      <main className="mx-auto flex h-full max-w-[480px] flex-col px-4 pb-0 text-left">
         <section className="grid gap-2.5 pb-3">
           <div className="grid grid-cols-3 gap-2">
             <div className="grid">
@@ -328,32 +377,37 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-          className={`grid ${
-            layout === "list" ? "grid-cols-1 gap-0" : "grid-cols-2 gap-2.5"
-          }`}
-          style={
-            layout === "grid-3"
-              ? { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }
-              : layout === "grid-4"
-                ? { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }
-                : undefined
-          }
-        >
-          {filteredBooks.map((book) => (
-            <article
-              key={book.title}
-              className={`grid overflow-hidden rounded-none ${
-                layout === "list"
-                  ? "grid-cols-[68px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] bg-transparent py-1.5"
-                  : "border border-[#e6e6e6] bg-white"
-              }`}
-            >
-              <div
-                className={`relative w-full ${
-                  layout === "list" ? "w-[68px]" : ""
+        <div className="relative flex-1 min-h-0">
+          <div
+            ref={scrollRef}
+            className="shelf-scroll hide-scrollbar h-full pb-[84px]"
+          >
+          <section
+            className={`grid ${
+              layout === "list" ? "grid-cols-1 gap-0" : "grid-cols-2 gap-2.5"
+            }`}
+            style={
+              layout === "grid-3"
+                ? { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }
+                : layout === "grid-4"
+                  ? { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }
+                  : undefined
+            }
+          >
+            {filteredBooks.map((book) => (
+              <article
+                key={book.id}
+                className={`grid overflow-hidden rounded-none ${
+                  layout === "list"
+                    ? "grid-cols-[68px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] bg-transparent py-1.5"
+                    : "border border-[#e6e6e6] bg-white"
                 }`}
               >
+                <div
+                  className={`relative w-full ${
+                    layout === "list" ? "w-[68px]" : ""
+                  }`}
+                >
                 <button
                   type="button"
                   className="absolute inset-0 z-10"
@@ -426,9 +480,45 @@ export default function Home() {
                 <p className="text-[11px] font-semibold">{book.title}</p>
                 <p className="text-[10px] text-[#6b6b6b]">{book.author}</p>
               </button>
-            </article>
-          ))}
-        </section>
+              </article>
+            ))}
+          </section>
+          </div>
+          {(scrollThumb.visible || scrollHeight > 0) && (
+            <div className="pointer-events-none absolute right-1 top-1 h-[calc(100%-8px)] w-[6px] rounded-full bg-transparent">
+              <div
+                className="pointer-events-auto w-full rounded-full bg-[#bdbdbd] active:bg-[#9b9b9b]"
+                style={{
+                  height: `${scrollThumb.height}px`,
+                  transform: `translateY(${scrollThumb.top}px)`,
+                }}
+                onPointerDown={(event) => {
+                  const container = scrollRef.current;
+                  if (!container) return;
+                  const startY = event.clientY;
+                  const startScrollTop = container.scrollTop;
+                  const trackHeight = container.clientHeight;
+                  const maxTop = trackHeight - scrollThumb.height;
+                  const ratio =
+                    (container.scrollHeight - container.clientHeight) /
+                      (maxTop || 1);
+
+                  const onMove = (moveEvent: PointerEvent) => {
+                    const delta = moveEvent.clientY - startY;
+                    container.scrollTop = startScrollTop + delta * ratio;
+                  };
+                  const onUp = () => {
+                    window.removeEventListener("pointermove", onMove);
+                    window.removeEventListener("pointerup", onUp);
+                  };
+                  window.addEventListener("pointermove", onMove);
+                  window.addEventListener("pointerup", onUp);
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                }}
+              />
+            </div>
+          )}
+        </div>
         {activeBook && (
           <div className="fixed inset-0 z-20 flex items-center justify-center px-4">
             <button
@@ -619,6 +709,19 @@ export default function Home() {
                           onClick={() => setIsBookEditing(false)}
                         >
                           キャンセル
+                        </button>
+                        <button
+                          type="button"
+                          className="rounded-full border border-[#c94b4b] px-3 py-1 text-[10px] text-[#c94b4b]"
+                          onClick={() => {
+                            if (!activeBook) return;
+                            removeBook(activeBook.id);
+                            setIsBookEditing(false);
+                            setBookVisible(false);
+                            setActiveBook(null);
+                          }}
+                        >
+                          削除
                         </button>
                         <button
                           type="button"

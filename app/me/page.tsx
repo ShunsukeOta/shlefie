@@ -13,7 +13,7 @@ export default function MePage() {
   const [profileText, setProfileText] = useState(
     "最近は日本文学を読み直しています。気になる本があれば教えてください。"
   );
-  const { logs: recentLogs } = useLibrary();
+  const { logs: recentLogs, books } = useLibrary();
 
   return (
     <div className="min-h-screen pb-[84px]">
@@ -141,9 +141,9 @@ export default function MePage() {
             )}
             <div className="mt-2 grid grid-cols-3 gap-2 text-[10px]">
               {[
-                { label: "フォロー", value: "128" },
-                { label: "フォロワー", value: "92" },
-                { label: "総shelf", value: "54" },
+                { label: "フォロー", value: "0" },
+                { label: "フォロワー", value: "0" },
+                { label: "総shelf", value: `${books.length}` },
               ].map((item) => (
                 <div
                   key={item.label}
@@ -159,7 +159,7 @@ export default function MePage() {
               <section className="mt-2 grid gap-0">
                 {recentLogs.map((log) => (
                   <div
-                    key={`${log.title}-${log.time}`}
+                    key={log.id}
                     className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
                   >
                     <div className="relative">
@@ -190,8 +190,14 @@ export default function MePage() {
                     </div>
                     <div className="grid gap-0.5 text-left">
                       <p className="text-[11px] text-[#222]">
-                        <strong className="font-semibold">{log.title}</strong>{" "}
-                        を{log.status}しました。
+                        <strong className="font-semibold">{log.title}</strong>
+                        {log.message?.includes("本棚から削除しました。")
+                          ? "を本棚から削除しました。"
+                          : log.message?.includes("本棚に登録しました。")
+                            ? "を本棚に登録しました。"
+                            : log.status
+                              ? `を「${log.status}」に変更しました。`
+                              : "を本棚に登録しました。"}
                       </p>
                       <span className="text-[10px] text-[#6b6b6b]">
                         {log.time}

@@ -1,4 +1,4 @@
-const CACHE_NAME = "shelfie-v1";
+const CACHE_NAME = "shelfie-v2";
 const CORE_ASSETS = ["/", "/summary", "/me", "/offline.html"];
 
 self.addEventListener("install", (event) => {
@@ -29,6 +29,11 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (url.pathname.startsWith("/api/")) {
+    event.respondWith(fetch(request));
     return;
   }
 
