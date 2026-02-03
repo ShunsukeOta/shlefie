@@ -9,16 +9,22 @@ export default function RegisterPage() {
         title="登録"
         rightSlot={
           <Link
-            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white"
+            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white text-[#222]"
             href="/settings"
             aria-label="設定"
           >
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="h-4 w-4 fill-current"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm9 3.5-.91.52a7.7 7.7 0 0 1-.2 1.03l.7.78-2.12 2.12-.78-.7c-.34.1-.68.17-1.03.2l-.52.91h-3l-.52-.91c-.35-.03-.7-.1-1.03-.2l-.78.7-2.12-2.12.7-.78c-.1-.34-.17-.68-.2-1.03L3 12l.91-.52c.03-.35.1-.7.2-1.03l-.7-.78 2.12-2.12.78.7c.34-.1.68-.17 1.03-.2L9 5h3l.52.91c.35.03.7.1 1.03.2l.78-.7 2.12 2.12-.7.78c.1.34.17.68.2 1.03L21 12Z" />
+              <circle cx="12" cy="12" r="3.2" />
+              <path d="M19.4 12a7.4 7.4 0 0 0-.09-1.12l2.02-1.57-2-3.46-2.46 1a7.73 7.73 0 0 0-1.94-1.12L14.6 3h-4l-.33 2.73c-.7.3-1.35.7-1.94 1.12l-2.46-1-2 3.46 2.02 1.57A7.4 7.4 0 0 0 5 12c0 .38.03.75.09 1.12L3.07 14.7l2 3.46 2.46-1c.59.43 1.24.82 1.94 1.12L10.6 21h4l.33-2.73c.7-.3 1.35-.7 1.94-1.12l2.46 1 2-3.46-2.02-1.57c.06-.37.09-.74.09-1.12Z" />
             </svg>
           </Link>
         }

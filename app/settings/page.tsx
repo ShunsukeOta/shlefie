@@ -8,7 +8,7 @@ export default function SettingsPage() {
         title="設定"
         rightSlot={
           <Link
-            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white"
+            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white text-[#222]"
             href="/"
             aria-label="戻る"
           >
