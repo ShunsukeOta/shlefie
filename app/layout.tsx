@@ -6,6 +6,7 @@ import RegisterModalProvider from "./_components/RegisterModalProvider";
 import LibraryProvider from "./_components/LibraryProvider";
 import ServiceWorker from "./_components/ServiceWorker";
 import NetworkStatusProvider from "./_components/NetworkStatusProvider";
+import PwaDebugBadge from "./_components/PwaDebugBadge";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -29,6 +30,11 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: "#222222",
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,6 +42,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Shelfie" />
+      </head>
       <body className={`${notoSansJp.className} ${geistMono.variable} app-root`}>
         <LibraryProvider>
           <NetworkStatusProvider>
@@ -45,6 +56,7 @@ export default function RootLayout({
           </NetworkStatusProvider>
         </LibraryProvider>
         <ServiceWorker />
+        <PwaDebugBadge />
       </body>
     </html>
   );
