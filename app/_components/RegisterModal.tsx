@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLibrary } from "./LibraryProvider";
+import { useNetworkStatus } from "./NetworkStatusProvider";
 
 type RegisterModalProps = {
   isOpen: boolean;
@@ -10,6 +11,7 @@ type RegisterModalProps = {
 
 export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const { addBook } = useLibrary();
+  const { requireOnline } = useNetworkStatus();
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -88,6 +90,10 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                 aria-label="バーコード読み込み"
                 className="grid h-9 w-9 aspect-square place-items-center rounded-full border border-[#e6e6e6] text-[#6b6b6b]"
                 title="バーコード読み込み"
+                onClick={() => {
+                  if (!requireOnline()) return;
+                  window.alert("バーコード読み込みは準備中です。");
+                }}
               >
                 <svg
                   viewBox="0 0 24 24"

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type BookStatusKey = "unread" | "stack" | "reading" | "done";
 
@@ -218,6 +218,28 @@ export default function LibraryProvider({ children }: LibraryProviderProps) {
   const [books, setBooks] = useState<Book[]>(seedBooks);
   const [logs, setLogs] = useState<LogItem[]>(seedLogs);
   const fallbackColors = ["#2c2f5a", "#1e3d5a", "#7a3b1e", "#1f4b3a", "#3c2a4d"];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedBooks = window.localStorage.getItem("shelfie_books");
+    const storedLogs = window.localStorage.getItem("shelfie_logs");
+    if (storedBooks) {
+      try {
+        setBooks(JSON.parse(storedBooks));
+      } catch (_) {}
+    }
+    if (storedLogs) {
+      try {
+        setLogs(JSON.parse(storedLogs));
+      } catch (_) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("shelfie_books", JSON.stringify(books));
+    window.localStorage.setItem("shelfie_logs", JSON.stringify(logs));
+  }, [books, logs]);
 
   const addBook: LibraryContextValue["addBook"] = (input) => {
     const now = new Date();
