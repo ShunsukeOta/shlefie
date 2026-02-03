@@ -1,78 +1,206 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import BottomNav from "../_components/BottomNav";
 import TopBar from "../_components/TopBar";
+import { useLibrary } from "../_components/LibraryProvider";
 
 export default function MePage() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [displayName, setDisplayName] = useState("shelfie user");
+  const [handle, setHandle] = useState("@shelfie_user");
+  const [profileText, setProfileText] = useState(
+    "最近は日本文学を読み直しています。気になる本があれば教えてください。"
+  );
+  const { logs: recentLogs } = useLibrary();
+
   return (
     <div className="min-h-screen pb-[84px]">
       <TopBar
         title="マイページ"
         rightSlot={
           <Link
-            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white text-[#222]"
+            className="grid h-9 w-9 place-items-center text-[#222]"
             href="/settings"
             aria-label="設定"
           >
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              className="h-[22px] w-[22px] fill-current"
             >
-              <circle cx="12" cy="12" r="3.2" />
-              <path d="M19.4 12a7.4 7.4 0 0 0-.09-1.12l2.02-1.57-2-3.46-2.46 1a7.73 7.73 0 0 0-1.94-1.12L14.6 3h-4l-.33 2.73c-.7.3-1.35.7-1.94 1.12l-2.46-1-2 3.46 2.02 1.57A7.4 7.4 0 0 0 5 12c0 .38.03.75.09 1.12L3.07 14.7l2 3.46 2.46-1c.59.43 1.24.82 1.94 1.12L10.6 21h4l.33-2.73c.7-.3 1.35-.7 1.94-1.12l2.46 1 2-3.46-2.02-1.57c.06-.37.09-.74.09-1.12Z" />
+              <rect x="4" y="6" width="16" height="2" rx="1" />
+              <rect x="4" y="11" width="16" height="2" rx="1" />
+              <rect x="4" y="16" width="16" height="2" rx="1" />
+              <circle cx="9" cy="7" r="2.2" />
+              <circle cx="15" cy="12" r="2.2" />
+              <circle cx="7.5" cy="17" r="2.2" />
             </svg>
           </Link>
         }
       />
       <main className="mx-auto max-w-[480px] px-4 pb-7">
-        <section className="rounded border border-[#e6e6e6] bg-white p-3">
-          <div className="grid grid-cols-[1fr_auto] gap-2 text-[11px]">
-            <span>登録冊数</span>
-            <strong>128</strong>
+        <section className="overflow-hidden rounded border border-[#e6e6e6] bg-white">
+          <div className="relative h-24 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
+            {isEditing && (
+              <button
+                type="button"
+                className="absolute right-3 top-3 rounded-full border border-white/30 px-2 py-1 text-[10px] text-white"
+              >
+                画像を変更
+              </button>
+            )}
           </div>
-          <div className="my-2 h-px bg-[#e6e6e6]" />
-          <div className="grid grid-cols-[1fr_auto] gap-2 text-[11px]">
-            <span>読了率</span>
-            <strong>42%</strong>
-          </div>
-        </section>
-
-        <h2 className="mt-3 text-[12px] font-semibold">サマリー</h2>
-        <section className="mt-2 grid gap-2">
-          {[
-            { label: "1週間", value: "+6冊" },
-            { label: "1か月", value: "+24冊" },
-            { label: "1年", value: "+180冊" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="grid gap-2 rounded border border-[#e6e6e6] bg-white p-2.5"
-            >
-              <div className="grid grid-cols-[1fr_auto] gap-2 text-[11px]">
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
+          <div className="grid gap-2 p-3 pt-6">
+            <div className="flex items-start justify-between">
+              <div className="-mt-14 relative z-10">
+                <div className="relative h-20 w-20 rounded-full border-2 border-white bg-[#f3f3f3]">
+                  <div className="h-full w-full rounded-full bg-[linear-gradient(135deg,#eeeeee,#d8d8d8)]" />
+                  {isEditing && (
+                    <button
+                      type="button"
+                      className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white"
+                      aria-label="プロフィール画像を変更"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="h-9 rounded bg-[repeating-linear-gradient(90deg,#e0e0e0_0,#e0e0e0_8px,#cfcfcf_8px,#cfcfcf_12px)]" />
+              <button
+                type="button"
+                className="grid h-8 w-8 place-items-center rounded-full border border-[#e6e6e6] text-[#6b6b6b]"
+                aria-label="編集"
+                onClick={() => setIsEditing((current) => !current)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z" />
+                </svg>
+              </button>
             </div>
-          ))}
-        </section>
-
-        <h2 className="mt-3 text-[12px] font-semibold">最近のログ</h2>
-        <section className="mt-2 grid gap-2">
-          <div className="grid gap-1.5 rounded border border-[#e6e6e6] bg-white p-2.5">
-            <span className="text-[11px] text-[#6b6b6b]">読了</span>
-            <strong className="text-[11px]">本のタイトル B</strong>
-            <span className="text-[11px] text-[#6b6b6b]">2時間前</span>
-          </div>
-          <div className="grid gap-1.5 rounded border border-[#e6e6e6] bg-white p-2.5">
-            <span className="text-[11px] text-[#6b6b6b]">積読</span>
-            <strong className="text-[11px]">本のタイトル A</strong>
-            <span className="text-[11px] text-[#6b6b6b]">昨日</span>
+            {isEditing ? (
+              <div className="grid gap-2">
+                <input
+                  className="w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[12px]"
+                  value={displayName}
+                  onChange={(event) => setDisplayName(event.target.value)}
+                  placeholder="表示名"
+                />
+                <textarea
+                  className="min-h-[96px] w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[12px]"
+                  value={profileText}
+                  onChange={(event) => setProfileText(event.target.value)}
+                  placeholder="プロフィール文を入力"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    className="rounded-full border border-[#e6e6e6] px-3 py-1.5 text-[11px] text-[#6b6b6b]"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full border border-[#222] bg-[#222] px-3 py-1.5 text-[11px] text-[#f9f9f9]"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    保存
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-1 text-left">
+                <p className="text-[13px] font-semibold">{displayName}</p>
+                <p className="text-[10px] text-[#6b6b6b]">{handle}</p>
+                <p className="mt-1 text-[11px] text-[#222]">{profileText}</p>
+              </div>
+            )}
+            <div className="mt-2 grid grid-cols-3 gap-2 text-[10px]">
+              {[
+                { label: "フォロー", value: "128" },
+                { label: "フォロワー", value: "92" },
+                { label: "総shelf", value: "54" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded bg-[#222] px-2 py-1 text-center text-white"
+                >
+                  <div className="font-semibold">{item.value}</div>
+                  <div className="text-[#d9d9d9]">{item.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3">
+              <h2 className="text-[12px] font-semibold">最近のログ</h2>
+              <section className="mt-2 grid gap-0">
+                {recentLogs.map((log) => (
+                  <div
+                    key={`${log.title}-${log.time}`}
+                    className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
+                  >
+                    <div className="relative">
+                      <div className="aspect-[3/4] w-[56px] overflow-hidden bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]">
+                        {log.imageUrl ? (
+                          <img
+                            src={log.imageUrl}
+                            alt={`${log.title} カバー`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
+                        )}
+                      </div>
+                      <span
+                        className={`absolute left-1 top-1 rounded-[2px] px-1 py-[2px] text-[9px] leading-none text-white ${
+                          log.statusKey === "unread"
+                            ? "bg-[#8c8c8c]"
+                            : log.statusKey === "stack"
+                              ? "bg-[#2f5fbf]"
+                              : log.statusKey === "reading"
+                                ? "bg-[#c36a1e]"
+                                : "bg-[#2f8a4a]"
+                        }`}
+                      >
+                        {log.status}
+                      </span>
+                    </div>
+                    <div className="grid gap-0.5 text-left">
+                      <p className="text-[11px] text-[#222]">
+                        <strong className="font-semibold">{log.title}</strong>{" "}
+                        を{log.status}しました。
+                      </p>
+                      <span className="text-[10px] text-[#6b6b6b]">
+                        {log.time}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </section>
+            </div>
           </div>
         </section>
       </main>

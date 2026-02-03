@@ -8,14 +8,14 @@ export default function SettingsPage() {
         title="設定"
         rightSlot={
           <Link
-            className="grid h-7 w-7 place-items-center rounded border border-[#e6e6e6] bg-white text-[#222]"
+            className="grid h-9 w-9 place-items-center text-[#222]"
             href="/"
             aria-label="戻る"
           >
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="h-4 w-4 fill-current"
+              className="h-5 w-5 fill-current"
             >
               <path d="M15.5 5.5 9 12l6.5 6.5-1.5 1.5L6 12l8-8 1.5 1.5Z" />
             </svg>
