@@ -7,7 +7,7 @@ type NavItem = {
   href: string;
   label: string;
   key: "shelf" | "summary" | "me";
-  icon: JSX.Element;
+  icon: React.ReactNode;
 };
 
 type BottomNavProps = {
