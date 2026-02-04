@@ -18,9 +18,9 @@ export default function MePage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <TopBar title="" />
-      <main className="mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] hide-scrollbar">
-        <section className="overflow-hidden rounded border border-[#e6e6e6] bg-white">
-          <div className="relative h-24 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
+      <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto pb-[84px] hide-scrollbar">
+        <section className="overflow-hidden bg-white">
+          <div className="relative h-32 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
             {isEditing && (
               <button
                 type="button"
@@ -30,10 +30,10 @@ export default function MePage() {
               </button>
             )}
           </div>
-          <div className="grid gap-2 p-3 pt-6">
+          <div className="grid gap-2 p-3 pt-3">
             <div className="flex items-start justify-between">
               <div className="-mt-14 relative z-10">
-                <div className="relative h-20 w-20 rounded-full border-2 border-white bg-[#f3f3f3]">
+                <div className="relative h-22 w-22 rounded-full border-2 border-white bg-[#f3f3f3]">
                   <div className="h-full w-full rounded-full bg-[linear-gradient(135deg,#eeeeee,#d8d8d8)]" />
                   {isEditing && (
                     <button
@@ -60,14 +60,14 @@ export default function MePage() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#e6e6e6] px-3 py-1.5 text-[11px] text-[#6b6b6b]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#e6e6e6] px-3 py-2 text-[12px] text-[#6b6b6b]"
                 aria-label="編集"
                 onClick={() => setIsEditing((current) => !current)}
               >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="h-4 w-4"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.6"
@@ -113,12 +113,12 @@ export default function MePage() {
               </div>
             ) : (
               <div className="grid gap-1 text-left">
-                <p className="text-[13px] font-semibold">{displayName}</p>
-                <p className="text-[10px] text-[#6b6b6b]">{handle}</p>
-                <p className="mt-1 text-[11px] text-[#222]">{profileText}</p>
+                <p className="text-[14px] font-semibold">{displayName}</p>
+                <p className="text-[12px] text-[#6b6b6b]">{handle}</p>
+                <p className="mt-1 text-[12px] text-[#222]">{profileText}</p>
               </div>
             )}
-            <div className="mt-2 grid grid-cols-3 gap-2 text-[10px]">
+            <div className="mt-2 grid grid-cols-3 gap-2 text-[12px]">
               {[
                 { label: "フォロー", value: "0" },
                 { label: "フォロワー", value: "0" },
@@ -126,16 +126,16 @@ export default function MePage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded bg-[#222] px-2 py-1 text-center text-white"
+                  className="rounded bg-[#222] px-2 py-2 text-center text-white"
                 >
-                  <div className="font-semibold">{item.value}</div>
+                  <div className="font-semibold text-[14px]">{item.value}</div>
                   <div className="text-[#d9d9d9]">{item.label}</div>
                 </div>
               ))}
             </div>
             <div className="mt-3">
               <Link
-                className="flex items-center justify-between rounded border border-[#e6e6e6] bg-white px-3 py-2 text-[12px] text-[#222]"
+                className="flex items-center justify-between rounded border border-[#e6e6e6] bg-white px-3 py-3 text-[14px] text-[#222]"
                 href="/settings"
                 aria-label="設定"
               >
@@ -155,7 +155,7 @@ export default function MePage() {
               </Link>
             </div>
             <div className="mt-3">
-              <h2 className="text-[12px] font-semibold">最近のログ</h2>
+              <h2 className="text-[14px] font-semibold">最近のログ</h2>
               <section className="mt-2 grid gap-0">
                 {recentLogs.map((log) => (
                   <div
@@ -189,7 +189,7 @@ export default function MePage() {
                       </span>
                     </div>
                     <div className="grid gap-0.5 text-left">
-                      <p className="text-[11px] text-[#222]">
+                      <p className="text-[12px] text-[#222]">
                         <strong className="font-semibold">{log.title}</strong>
                         {log.message?.includes("本棚から削除しました。")
                           ? "を本棚から削除しました。"

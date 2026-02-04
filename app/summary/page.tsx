@@ -56,8 +56,8 @@ function ChartCard({ title, data }: SeriesProps) {
   return (
     <section className="rounded border border-[#e6e6e6] bg-white p-3">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-[12px] font-semibold">{title}</h2>
-        <div className="flex items-center gap-2 text-[10px] text-[#6b6b6b]">
+        <h2 className="text-[14px] font-semibold">{title}</h2>
+        <div className="flex items-center gap-2 text-[12px] text-[#6b6b6b]">
           <span className="inline-flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-[#2f8a4a]" />
             読書量
@@ -109,8 +109,8 @@ function ChartCard({ title, data }: SeriesProps) {
               {isActive && (
                 <div className="pointer-events-none absolute -top-10 left-1/2 z-10 w-max max-w-[140px] -translate-x-1/2 whitespace-nowrap rounded-md border border-[#e6e6e6] bg-white px-2 py-1 text-[10px] text-[#222] shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
                   <p>{item.label}</p>
-                  <p>読書量: {item.read}</p>
-                  <p>登録量: {item.add}</p>
+                  <p>読書量: {item.read}冊</p>
+                  <p>登録量: {item.add}冊</p>
                 </div>
               )}
               <span className="mt-1 text-[9px] text-[#6b6b6b]">
@@ -180,7 +180,7 @@ export default function SummaryPage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <TopBar title="" />
-      <main className="mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
+      <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
         <div className="grid gap-3">
           <div className="inline-flex items-center gap-1 rounded-full bg-[#f1f1f1] p-1">
             {[
@@ -191,7 +191,7 @@ export default function SummaryPage() {
               <button
                 key={item.key}
                 type="button"
-                className={`rounded-full px-3 py-1 text-[11px] transition-colors ${
+                className={`rounded-full px-4 py-2 text-[12px] transition-colors ${
                   range === item.key
                     ? "bg-white text-[#222]"
                     : "text-[#6b6b6b]"
@@ -207,13 +207,13 @@ export default function SummaryPage() {
           <ChartCard title={activeSeries.title} data={activeSeries.data} />
         </div>
 
-        <section className="mt-3 grid grid-cols-2 gap-2">
+        <section className="mt-3 grid grid-cols-3 gap-2">
           {totals.map((item) => (
             <div
               key={item.label}
               className="rounded border border-[#e6e6e6] bg-white px-3 py-2"
             >
-              <p className="text-[10px] text-[#6b6b6b]">{item.label}</p>
+              <p className="text-[12px] text-[#6b6b6b]">{item.label}</p>
               <p className="text-[14px] font-semibold">{item.value}</p>
             </div>
           ))}

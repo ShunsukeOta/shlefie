@@ -20,12 +20,12 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "shelf",
       href: "/",
-      label: "Shelf",
+      label: "本棚",
       icon: (
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-6 w-6 fill-current"
+          className="h-full w-full fill-current"
         >
           <rect x="4" y="4" width="4" height="16" rx="1.5" />
           <rect x="10" y="4" width="4" height="16" rx="1.5" />
@@ -36,12 +36,12 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "timeline",
       href: "/timeline",
-      label: "Timeline",
+      label: "タイムライン",
       icon: (
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-5 w-5 fill-current"
+          className="h-full w-full fill-current"
         >
           <circle cx="6" cy="6.5" r="2" />
           <circle cx="6" cy="12" r="2" />
@@ -55,12 +55,12 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "summary",
       href: "/summary",
-      label: "Summary",
+      label: "まとめ",
       icon: (
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-5 w-5 fill-current"
+          className="h-full w-full fill-current"
         >
           <rect x="5" y="6" width="14" height="2" rx="1" />
           <rect x="5" y="11" width="10" height="2" rx="1" />
@@ -71,12 +71,12 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "me",
       href: "/me",
-      label: "MyPage",
+      label: "マイページ",
       icon: (
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-5 w-5 fill-current"
+          className="h-full w-full fill-current"
         >
           <circle cx="12" cy="8" r="3.5" />
           <rect x="5" y="14" width="14" height="6" rx="3" />
@@ -85,39 +85,60 @@ export default function BottomNav({ active }: BottomNavProps) {
     },
   ];
 
+  const ordered = [
+    items.find((item) => item.key === "shelf"),
+    items.find((item) => item.key === "timeline"),
+    "register",
+    items.find((item) => item.key === "summary"),
+    items.find((item) => item.key === "me"),
+  ] as const;
+
   return (
-    <div className="fixed bottom-6 left-1/2 z-10 flex w-[min(92vw,420px)] -translate-x-1/2 items-center gap-2">
-      <nav className="flex h-16 flex-1 justify-between gap-3 rounded-full border border-[#e6e6e6] bg-white px-1.5 py-1">
-        {items.map((item) => (
-          <Link
-            key={item.key}
-            className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-full px-2 py-1.5 text-[11px] transition-colors duration-300 ${
-              active === item.key ? "bg-[#222] text-[#f9f9f9]" : "text-[#6b6b6b]"
-            }`}
-            href={item.href}
-          >
-            <span className="inline-flex h-6 w-6 items-center justify-center">
-              {item.icon}
-            </span>
-            <span className="text-[10px]">{item.label}</span>
-          </Link>
-        ))}
+    <div className="fixed bottom-6 left-1/2 z-10 w-[min(92vw,420px)] -translate-x-1/2">
+      <nav className="grid h-18 grid-cols-5 items-center gap-2 rounded-full border border-[#e6e6e6] bg-white px-2 py-2">
+        {ordered.map((entry) => {
+          if (entry === "register") {
+            return (
+              <button
+                key="register"
+                type="button"
+                aria-label="登録"
+                className="grid h-full w-full place-items-center rounded-full border border-[#e6e6e6] bg-[#334455] text-[#f9f9f9] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-colors duration-300 hover:bg-[#2a3949]"
+                onClick={openRegister}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-7 w-7 fill-current"
+                >
+                  <rect x="10.5" y="5.5" width="3" height="13" rx="1.5" />
+                  <rect x="5.5" y="10.5" width="13" height="3" rx="1.5" />
+                </svg>
+              </button>
+            );
+          }
+
+          if (!entry) return null;
+
+          const isActive = active === entry.key;
+          const iconSize = "h-7 w-7";
+
+          return (
+            <Link
+              key={entry.key}
+              className={`flex h-full w-full items-center justify-center rounded-full px-2 py-2 text-[11px] transition-colors duration-300 ${
+                isActive ? "bg-[#222] text-[#f9f9f9]" : "text-[#6b6b6b]"
+              }`}
+              href={entry.href}
+              aria-label={entry.label}
+            >
+              <span className={`inline-flex items-center justify-center ${iconSize}`}>
+                {entry.icon}
+              </span>
+            </Link>
+          );
+        })}
       </nav>
-      <button
-        type="button"
-        aria-label="登録"
-        className="grid h-16 w-16 place-items-center rounded-full border border-[#e6e6e6] bg-black text-[#f9f9f9] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-colors duration-300 hover:bg-[#111]"
-        onClick={openRegister}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-          className="h-6 w-6 fill-current"
-        >
-          <rect x="10.5" y="5.5" width="3" height="13" rx="1.5" />
-          <rect x="5.5" y="10.5" width="13" height="3" rx="1.5" />
-        </svg>
-      </button>
     </div>
   );
 }

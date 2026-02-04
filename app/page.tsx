@@ -14,9 +14,7 @@ const formatDateJp = (value: string) => {
 };
 
 export default function Home() {
-  const [layout, setLayout] = useState<"grid-2" | "grid-3" | "grid-4" | "list">(
-    "grid-2"
-  );
+  const [layout, setLayout] = useState<"grid-4" | "grid-3" | "list">("grid-4");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "unread" | "stack" | "reading" | "done"
   >("all");
@@ -139,97 +137,73 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <TopBar title="" />
-      <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden px-4 pt-3 pb-0 text-left">
+      <main className="scroll-pane mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden px-4 pt-2 pb-0 text-left">
         <section className="grid gap-2.5 pb-3">
           <div className="flex flex-nowrap items-stretch gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="inline-flex w-full items-center justify-between gap-1 rounded-full bg-[#f1f1f1] p-1">
-                {[
-              {
-                key: "grid-2",
-                label: "2列グリッド",
-                icon: (
-                  <>
-                    <rect x="5" y="6" width="6" height="6" rx="1.2" />
-                    <rect x="13" y="6" width="6" height="6" rx="1.2" />
-                    <rect x="5" y="13" width="6" height="6" rx="1.2" />
-                    <rect x="13" y="13" width="6" height="6" rx="1.2" />
-                  </>
-                ),
-              },
-              {
-                key: "grid-3",
-                label: "3列グリッド",
-                icon: (
-                  <>
-                    <rect x="4" y="6" width="4.5" height="4.5" rx="1" />
-                    <rect x="9.75" y="6" width="4.5" height="4.5" rx="1" />
-                    <rect x="15.5" y="6" width="4.5" height="4.5" rx="1" />
-                    <rect x="4" y="13.5" width="4.5" height="4.5" rx="1" />
-                    <rect x="9.75" y="13.5" width="4.5" height="4.5" rx="1" />
-                    <rect x="15.5" y="13.5" width="4.5" height="4.5" rx="1" />
-                  </>
-                ),
-              },
-              {
-                key: "grid-4",
-                label: "4列グリッド",
-                icon: (
-                  <>
-                    <rect x="4" y="6" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="8.9" y="6" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="13.8" y="6" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="18.7" y="6" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="4" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="8.9" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="13.8" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                    <rect x="18.7" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                  </>
-                ),
-              },
-              {
-                key: "list",
-                label: "リスト",
-                icon: (
-                  <>
-                    <rect x="6" y="6.5" width="12" height="2.4" rx="1.2" />
-                    <rect x="6" y="11" width="12" height="2.4" rx="1.2" />
-                    <rect x="6" y="15.5" width="12" height="2.4" rx="1.2" />
-                  </>
-                ),
-              },
-                ].map((item) => (
-                  <button
-                    key={item.key}
-                    aria-pressed={layout === item.key}
-                    aria-label={item.label}
-                    title={item.label}
-                    className={`grid h-7 w-8 place-items-center rounded-full transition-colors ${
-                      layout === item.key
-                        ? "bg-white text-[#222]"
-                        : "text-[#8b8b8b]"
-                    }`}
-                    onClick={() =>
-                      setLayout(
-                        item.key as "grid-2" | "grid-3" | "grid-4" | "list"
-                      )
-                    }
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      className="h-4 w-4 fill-current"
-                    >
-                      {item.icon}
-                    </svg>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 order-3 flex justify-end">
               <button
                 type="button"
-                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[12px] text-[#222]"
+                aria-pressed={layout === "list"}
+                aria-label={
+                  layout === "grid-4"
+                    ? "3列グリッドに切替"
+                    : layout === "grid-3"
+                      ? "リストに切替"
+                      : "4列グリッドに切替"
+                }
+                title={
+                  layout === "grid-4"
+                    ? "3列グリッドに切替"
+                    : layout === "grid-3"
+                      ? "リストに切替"
+                      : "4列グリッドに切替"
+                }
+                className="flex h-full aspect-square items-center justify-center rounded border border-[#e6e6e6] bg-white text-[#222]"
+                onClick={() =>
+                  setLayout((current) =>
+                    current === "grid-4" ? "grid-3" : current === "grid-3" ? "list" : "grid-4"
+                  )
+                }
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-6 w-6 fill-current"
+                >
+                  {layout === "grid-4" ? (
+                    <>
+                      <rect x="4" y="6" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="8.9" y="6" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="13.8" y="6" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="18.7" y="6" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="4" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="8.9" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="13.8" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                      <rect x="18.7" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                    </>
+                  ) : layout === "grid-3" ? (
+                    <>
+                      <rect x="4" y="6" width="4.5" height="4.5" rx="1" />
+                      <rect x="9.75" y="6" width="4.5" height="4.5" rx="1" />
+                      <rect x="15.5" y="6" width="4.5" height="4.5" rx="1" />
+                      <rect x="4" y="13.5" width="4.5" height="4.5" rx="1" />
+                      <rect x="9.75" y="13.5" width="4.5" height="4.5" rx="1" />
+                      <rect x="15.5" y="13.5" width="4.5" height="4.5" rx="1" />
+                    </>
+                  ) : (
+                    <>
+                      <rect x="6" y="6.5" width="12" height="2.4" rx="1.2" />
+                      <rect x="6" y="11" width="12" height="2.4" rx="1.2" />
+                      <rect x="6" y="15.5" width="12" height="2.4" rx="1.2" />
+                    </>
+                  )}
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 min-w-0 order-1">
+              <button
+                type="button"
+                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[14px] text-[#222]"
                 onClick={() => {
                   setActiveSheet("status");
                   setSheetVisible(true);
@@ -239,7 +213,7 @@ export default function Home() {
                   <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 fill-current"
+                    className="h-5 w-5 fill-current"
                   >
                     <path
                       fillRule="evenodd"
@@ -256,7 +230,7 @@ export default function Home() {
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="h-3.5 w-3.5"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.6"
@@ -267,10 +241,10 @@ export default function Home() {
                 </svg>
               </button>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 order-2">
               <button
                 type="button"
-                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[12px] text-[#222]"
+                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[14px] text-[#222]"
                 onClick={() => {
                   setActiveSheet("sort");
                   setSheetVisible(true);
@@ -280,7 +254,7 @@ export default function Home() {
                   <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    className="h-3.5 w-3.5"
+                    className="h-5 w-5"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.6"
@@ -299,7 +273,7 @@ export default function Home() {
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="h-3.5 w-3.5"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.6"
@@ -410,8 +384,8 @@ export default function Home() {
                   setBookVisible(true);
                 }}
               >
-                <p className="text-[11px] font-semibold">{book.title}</p>
-                <p className="text-[10px] text-[#6b6b6b]">{book.author}</p>
+                <p className="text-[12px] font-semibold">{book.title}</p>
+                <p className="text-[11px] text-[#6b6b6b]">{book.author}</p>
               </button>
               </article>
             ))}
@@ -455,7 +429,7 @@ export default function Home() {
                   <div className="flex items-start justify-between gap-2">
                     {isBookEditing ? (
                       <input
-                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[12px]"
+                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[16px]"
                         value={editForm.title}
                         onChange={(event) =>
                           setEditForm((current) => ({
@@ -465,7 +439,7 @@ export default function Home() {
                         }
                       />
                     ) : (
-                      <p className="text-[12px] font-semibold">
+                      <p className="text-[14px] font-semibold">
                         {activeBook.title}
                       </p>
                     )}
@@ -478,7 +452,7 @@ export default function Home() {
                       <svg
                         viewBox="0 0 24 24"
                         aria-hidden="true"
-                        className="h-[18px] w-[18px]"
+                        className="h-6 w-6"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="1.6"
@@ -491,9 +465,9 @@ export default function Home() {
                     </button>
                   </div>
                   {isBookEditing ? (
-                    <div className="grid gap-2 text-[10px]">
+                    <div className="grid gap-2 text-[16px]">
                       <input
-                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[10px]"
+                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[16px]"
                         placeholder="著者"
                         value={editForm.author}
                         onChange={(event) =>
@@ -505,7 +479,7 @@ export default function Home() {
                       />
                       <div className="grid grid-cols-2 gap-2">
                         <select
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
+                          className="w-full rounded border border-[#e6e6e6] px-2 py-2"
                           value={editForm.statusKey}
                           onChange={(event) =>
                             setEditForm((current) => ({
@@ -604,14 +578,14 @@ export default function Home() {
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          className="rounded-full border border-[#e6e6e6] px-3 py-1 text-[10px] text-[#6b6b6b]"
+                          className="rounded-full border border-[#e6e6e6] px-3 py-2 text-[14px] text-[#6b6b6b]"
                           onClick={() => setIsBookEditing(false)}
                         >
                           キャンセル
                         </button>
                         <button
                           type="button"
-                          className="rounded-full border border-[#c94b4b] px-3 py-1 text-[10px] text-[#c94b4b]"
+                          className="rounded-full border border-[#c94b4b] px-4 py-2 text-[14px] text-[#c94b4b]"
                           onClick={() => {
                             if (!activeBook) return;
                             removeBook(activeBook.id);
@@ -624,7 +598,7 @@ export default function Home() {
                         </button>
                         <button
                           type="button"
-                          className="rounded-full border border-[#222] bg-[#222] px-3 py-1 text-[10px] text-[#f9f9f9]"
+                          className="rounded-full border border-[#222] bg-[#222] px-3 py-2 text-[14px] text-[#f9f9f9]"
                           onClick={() => {
                             if (!activeBook) return;
                             updateBook(activeBook.id, {
@@ -652,7 +626,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <>
-                      <p className="text-[10px] text-[#6b6b6b]">
+                      <p className="text-[12px] text-[#6b6b6b]">
                         {activeBook.author}
                       </p>
                       <dl className="mt-3 grid text-[10px]">
@@ -677,14 +651,14 @@ export default function Home() {
                         ].map((row, index, all) => (
                           <div
                             key={row.label}
-                            className={`grid grid-cols-[40px_1fr] items-center gap-2 py-2 ${
+                            className={`grid grid-cols-[40px_1fr] items-center gap-2 py-3 ${
                               index !== all.length - 1
                                 ? "border-b border-[#e6e6e6]"
                                 : ""
                             }`}
                           >
-                            <dt className="text-[#8b8b8b]">{row.label}</dt>
-                            <dd className="text-[#222]">{row.value}</dd>
+                            <dt className="text-[#8b8b8b] text-[12px]">{row.label}</dt>
+                            <dd className="text-[#222] text-[12px]">{row.value}</dd>
                           </div>
                         ))}
                       </dl>
@@ -692,13 +666,6 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <button
-                type="button"
-                className="w-full border-t border-[#e6e6e6] py-2 text-[11px] text-[#6b6b6b]"
-                onClick={() => setBookVisible(false)}
-              >
-                閉じる
-              </button>
             </div>
           </div>
         )}
@@ -718,15 +685,28 @@ export default function Home() {
               }`}
             >
               <div className="mb-3 flex items-center justify-between">
-                <strong className="text-[13px] text-[#222]">
+                <strong className="text-[16px] text-[#222]">
                   {activeSheet === "status" ? "進捗" : "並び順"}
                 </strong>
                 <button
                   type="button"
-                  className="text-[11px] text-[#6b6b6b]"
+                  className="grid h-8 w-8 place-items-center text-[#6b6b6b]"
                   onClick={() => setSheetVisible(false)}
+                  aria-label="閉じる"
                 >
-                  閉じる
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6l-12 12" />
+                  </svg>
                 </button>
               </div>
               <div className="grid gap-2">
@@ -740,7 +720,7 @@ export default function Home() {
                       <button
                         key={option.value}
                         type="button"
-                        className={`flex items-center justify-between rounded-xl border px-3 py-2 text-[12px] ${
+                        className={`flex items-center justify-between rounded-xl border px-3 py-3 text-[14px] ${
                           selected
                             ? "border-[#222] bg-[#222] text-[#f9f9f9]"
                             : "border-[#e6e6e6] bg-white text-[#222]"
@@ -765,7 +745,7 @@ export default function Home() {
                       >
                         <span>{option.label}</span>
                         {selected && (
-                          <span className="text-[10px]">選択中</span>
+                          <span className="text-[12px]">選択中</span>
                         )}
                       </button>
                     );
