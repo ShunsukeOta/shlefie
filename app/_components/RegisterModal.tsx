@@ -37,6 +37,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [memo, setMemo] = useState("");
   const [suppressSearch, setSuppressSearch] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
   const searchCache = useRef(new Map<string, typeof searchResults>());
 
   const isValid = useMemo(() => title.trim().length > 0, [title]);
@@ -57,11 +58,14 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       setSearchError("2文字以上で検索できます。");
       return;
     }
+    if (isComposing) {
+      return;
+    }
     const timer = window.setTimeout(() => {
       runSearch(trimmed);
     }, 500);
     return () => window.clearTimeout(timer);
-  }, [title]);
+  }, [title, isComposing]);
 
   const runSearch = async (query: string) => {
     if (!requireOnline()) return;
@@ -88,6 +92,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         return;
       }
       const items = Array.isArray(data.items) ? data.items : [];
+      const normalizedQuery = query.trim().toLowerCase();
       const mapped = items.map((item: any) => {
         const info = item.volumeInfo || {};
         return {
@@ -106,8 +111,20 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
               : undefined,
           imageUrl: info.imageLinks?.thumbnail,
         };
+      }).sort((a, b) => {
+        const aTitle = a.title.toLowerCase();
+        const bTitle = b.title.toLowerCase();
+        const aExact = aTitle === normalizedQuery;
+        const bExact = bTitle === normalizedQuery;
+        if (aExact !== bExact) return aExact ? -1 : 1;
+        const aIncludes = aTitle.includes(normalizedQuery);
+        const bIncludes = bTitle.includes(normalizedQuery);
+        if (aIncludes !== bIncludes) return aIncludes ? -1 : 1;
+        return 0;
       });
-      searchCache.current.set(trimmed, mapped);
+      if (mapped.length > 0) {
+        searchCache.current.set(trimmed, mapped);
+      }
       setSearchResults(mapped);
       if (mapped.length === 0) {
         setSearchError("検索結果がありません。");
@@ -215,6 +232,11 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                 placeholder="例）ノルウェイの森"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={(event) => {
+                  setIsComposing(false);
+                  setTitle(event.currentTarget.value);
+                }}
               />
               <button
                 type="button"

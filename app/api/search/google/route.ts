@@ -15,19 +15,26 @@ export async function GET(request: Request) {
     );
   }
 
+  const maxResults = 5;
   const queries = [
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+    `https://www.googleapis.com/books/v1/volumes?q=intitle:%22${encodeURIComponent(
       q
-    )}&printType=books&maxResults=6&langRestrict=ja&key=${apiKey}`,
+    )}%22&printType=books&maxResults=${maxResults}&langRestrict=ja&key=${apiKey}`,
     `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(
       q
-    )}&printType=books&maxResults=6&langRestrict=ja&key=${apiKey}`,
+    )}&printType=books&maxResults=${maxResults}&langRestrict=ja&key=${apiKey}`,
     `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       q
-    )}&printType=books&maxResults=6&key=${apiKey}`,
+    )}&printType=books&maxResults=${maxResults}&langRestrict=ja&key=${apiKey}`,
+    `https://www.googleapis.com/books/v1/volumes?q=intitle:%22${encodeURIComponent(
+      q
+    )}%22&printType=books&maxResults=${maxResults}&key=${apiKey}`,
     `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(
       q
-    )}&printType=books&maxResults=6&key=${apiKey}`,
+    )}&printType=books&maxResults=${maxResults}&key=${apiKey}`,
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+      q
+    )}&printType=books&maxResults=${maxResults}&key=${apiKey}`,
   ];
 
   let data: any = { items: [], totalItems: 0 };
