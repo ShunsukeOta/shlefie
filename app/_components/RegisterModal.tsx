@@ -111,7 +111,8 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
               : undefined,
           imageUrl: info.imageLinks?.thumbnail,
         };
-      }).sort((a, b) => {
+      }) as typeof searchResults;
+      mapped.sort((a: (typeof searchResults)[number], b: (typeof searchResults)[number]) => {
         const aTitle = a.title.toLowerCase();
         const bTitle = b.title.toLowerCase();
         const aExact = aTitle === normalizedQuery;
