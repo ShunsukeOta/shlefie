@@ -35,7 +35,7 @@
 
   body.pwa {
     padding-bottom: 24px;
-    padding-top: env(safe-area-inset-top);
+    padding-top: 0;
   }
 
   input,

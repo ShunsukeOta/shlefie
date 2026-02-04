@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "Shelfie",
   description: "Minimal mobile-first bookshelf MVP wireframes.",
   manifest: "/manifest.webmanifest",
-  themeColor: "#000000",
+  themeColor: "#222222",
   icons: {
     icon: "/icons/icon-192.svg",
     apple: "/apple-touch-icon.svg",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#000000",
+  themeColor: "#222222",
   viewportFit: "cover",
 };
 
