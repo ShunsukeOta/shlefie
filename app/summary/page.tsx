@@ -178,9 +178,9 @@ export default function SummaryPage() {
         : { title: "1年の読書量・登録量", data: yearly };
 
   return (
-    <div className="min-h-screen pb-[84px]">
-      <TopBar title="まとめ" />
-      <main className="mx-auto max-w-[480px] px-4 pb-7 text-left">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <TopBar title="" />
+      <main className="mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
         <div className="grid gap-3">
           <div className="inline-flex items-center gap-1 rounded-full bg-[#f1f1f1] p-1">
             {[

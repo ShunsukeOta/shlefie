@@ -3,12 +3,12 @@ import TopBar from "../_components/TopBar";
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen pb-[84px]">
+    <div className="flex h-screen flex-col overflow-hidden">
       <TopBar
         title="設定"
         rightSlot={
           <Link
-            className="grid h-9 w-9 place-items-center text-[#222]"
+            className="grid h-9 w-9 place-items-center text-white"
             href="/"
             aria-label="戻る"
           >
@@ -22,7 +22,7 @@ export default function SettingsPage() {
           </Link>
         }
       />
-      <main className="mx-auto max-w-[480px] px-4 pb-7">
+      <main className="mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] hide-scrollbar">
         <section className="grid gap-2 rounded border border-[#e6e6e6] bg-white p-3 text-[11px]">
           <div className="grid grid-cols-[1fr_auto] items-center gap-2">
             <span>エクスポート</span>

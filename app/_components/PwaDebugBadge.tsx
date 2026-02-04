@@ -14,7 +14,7 @@ export default function PwaDebugBadge() {
   }, []);
 
   return (
-    <div className="fixed left-3 top-3 z-[60] rounded-full bg-[#222] px-2 py-1 text-[10px] text-[#f9f9f9]">
+    <div className="fixed right-3 top-3 z-[60] rounded-full bg-[#222] px-2 py-1 text-[10px] text-[#f9f9f9]">
       PWA: {mode}
     </div>
   );

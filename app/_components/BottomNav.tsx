@@ -6,12 +6,12 @@ import { useRegisterModal } from "./RegisterModalProvider";
 type NavItem = {
   href: string;
   label: string;
-  key: "shelf" | "summary" | "me";
+  key: "shelf" | "timeline" | "summary" | "me";
   icon: React.ReactNode;
 };
 
 type BottomNavProps = {
-  active: "shelf" | "summary" | "me";
+  active: "shelf" | "timeline" | "summary" | "me";
 };
 
 export default function BottomNav({ active }: BottomNavProps) {
@@ -20,7 +20,7 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "shelf",
       href: "/",
-      label: "本棚",
+      label: "Shelf",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -34,9 +34,28 @@ export default function BottomNav({ active }: BottomNavProps) {
       ),
     },
     {
+      key: "timeline",
+      href: "/timeline",
+      label: "Timeline",
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="h-5 w-5 fill-current"
+        >
+          <circle cx="6" cy="6.5" r="2" />
+          <circle cx="6" cy="12" r="2" />
+          <circle cx="6" cy="17.5" r="2" />
+          <rect x="10" y="5.5" width="9" height="2" rx="1" />
+          <rect x="10" y="11" width="9" height="2" rx="1" />
+          <rect x="10" y="16.5" width="9" height="2" rx="1" />
+        </svg>
+      ),
+    },
+    {
       key: "summary",
       href: "/summary",
-      label: "まとめ",
+      label: "Summary",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -52,7 +71,7 @@ export default function BottomNav({ active }: BottomNavProps) {
     {
       key: "me",
       href: "/me",
-      label: "マイページ",
+      label: "MyPage",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -87,7 +106,7 @@ export default function BottomNav({ active }: BottomNavProps) {
       <button
         type="button"
         aria-label="登録"
-        className="grid h-16 w-16 place-items-center rounded-full bg-[#1f3c78] text-[#f9f9f9] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-colors duration-300 hover:bg-[#23468a]"
+        className="grid h-16 w-16 place-items-center rounded-full border border-[#e6e6e6] bg-black text-[#f9f9f9] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-colors duration-300 hover:bg-[#111]"
         onClick={openRegister}
       >
         <svg

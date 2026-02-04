@@ -16,31 +16,9 @@ export default function MePage() {
   const { logs: recentLogs, books } = useLibrary();
 
   return (
-    <div className="min-h-screen pb-[84px]">
-      <TopBar
-        title="マイページ"
-        rightSlot={
-          <Link
-            className="grid h-9 w-9 place-items-center text-[#222]"
-            href="/settings"
-            aria-label="設定"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="h-[22px] w-[22px] fill-current"
-            >
-              <rect x="4" y="6" width="16" height="2" rx="1" />
-              <rect x="4" y="11" width="16" height="2" rx="1" />
-              <rect x="4" y="16" width="16" height="2" rx="1" />
-              <circle cx="9" cy="7" r="2.2" />
-              <circle cx="15" cy="12" r="2.2" />
-              <circle cx="7.5" cy="17" r="2.2" />
-            </svg>
-          </Link>
-        }
-      />
-      <main className="mx-auto max-w-[480px] px-4 pb-7">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <TopBar title="" />
+      <main className="mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] hide-scrollbar">
         <section className="overflow-hidden rounded border border-[#e6e6e6] bg-white">
           <div className="relative h-24 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
             {isEditing && (
@@ -82,7 +60,7 @@ export default function MePage() {
               </div>
               <button
                 type="button"
-                className="grid h-8 w-8 place-items-center rounded-full border border-[#e6e6e6] text-[#6b6b6b]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#e6e6e6] px-3 py-1.5 text-[11px] text-[#6b6b6b]"
                 aria-label="編集"
                 onClick={() => setIsEditing((current) => !current)}
               >
@@ -99,6 +77,7 @@ export default function MePage() {
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z" />
                 </svg>
+                <span>プロフィールを編集</span>
               </button>
             </div>
             {isEditing ? (
@@ -153,6 +132,27 @@ export default function MePage() {
                   <div className="text-[#d9d9d9]">{item.label}</div>
                 </div>
               ))}
+            </div>
+            <div className="mt-3">
+              <Link
+                className="flex items-center justify-between rounded border border-[#e6e6e6] bg-white px-3 py-2 text-[12px] text-[#222]"
+                href="/settings"
+                aria-label="設定"
+              >
+                <span>設定</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </Link>
             </div>
             <div className="mt-3">
               <h2 className="text-[12px] font-semibold">最近のログ</h2>
