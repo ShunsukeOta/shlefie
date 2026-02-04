@@ -164,26 +164,39 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       >
         <div className="flex items-center justify-between px-4 pt-4">
           <div>
-            <strong className="text-[13px] text-[#222]">登録</strong>
+            <strong className="text-[16px] text-[#222]">登録</strong>
           </div>
           <button
             type="button"
-            className="rounded-full border border-[#e6e6e6] px-2.5 py-1 text-[10px] text-[#6b6b6b]"
+            className="grid h-8 w-8 place-items-center text-[#6b6b6b]"
             onClick={() => setVisible(false)}
+            aria-label="閉じる"
           >
-            閉じる
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 6l12 12" />
+              <path d="M18 6l-12 12" />
+            </svg>
           </button>
         </div>
 
         <div
-          className="grid gap-3 overflow-y-auto px-4 pb-4 pt-3 text-[12px]"
+          className="grid gap-3 overflow-y-auto px-4 pb-4 pt-3 text-[14px]"
           style={{ maxHeight: "72vh" }}
         >
           <div className="grid gap-1">
-            <label className="text-[10px] text-[#6b6b6b]">タイトル</label>
+            <label className="text-[14px] text-[#6b6b6b]">タイトル</label>
             <div className="flex items-center gap-2 rounded-xl border border-[#f6f6f6] bg-white px-3 py-2">
               <input
-                className="w-full bg-transparent text-[12px] text-[#222] outline-none placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0"
+                className="w-full bg-transparent text-[14px] text-[#222] outline-none placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0"
                 placeholder="例）ノルウェイの森"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
@@ -218,10 +231,10 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
               </button>
             </div>
             {isSearching && (
-              <span className="text-[10px] text-[#6b6b6b]">検索中...</span>
+              <span className="text-[14px] text-[#6b6b6b]">検索中...</span>
             )}
             {searchError && (
-              <span className="text-[10px] text-[#b04a4a]">{searchError}</span>
+              <span className="text-[14px] text-[#b04a4a]">{searchError}</span>
             )}
             {searchResults.length > 0 && (
               <div className="grid gap-2 rounded-xl border border-[#f6f6f6] bg-white p-2">
@@ -244,10 +257,10 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                       )}
                     </div>
                     <div className="grid gap-0.5">
-                      <span className="text-[11px] font-semibold">
+                      <span className="text-[14px] font-semibold">
                         {result.title}
                       </span>
-                      <span className="text-[10px] text-[#6b6b6b]">
+                      <span className="text-[14px] text-[#6b6b6b]">
                         {result.author || "著者不明"}
                       </span>
                     </div>
@@ -257,9 +270,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             )}
           </div>
           <div className="grid gap-1">
-            <label className="text-[10px] text-[#6b6b6b]">著者</label>
+            <label className="text-[14px] text-[#6b6b6b]">著者</label>
             <input
-              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="例）村上 春樹"
               value={author}
               onChange={(event) => setAuthor(event.target.value)}
@@ -267,9 +280,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">種別</label>
+              <label className="text-[14px] text-[#6b6b6b]">種別</label>
               <select
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
@@ -281,9 +294,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
               </select>
             </div>
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">進捗</label>
+              <label className="text-[14px] text-[#6b6b6b]">進捗</label>
               <select
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 value={statusKey}
                 onChange={(event) => setStatusKey(event.target.value)}
               >
@@ -296,18 +309,18 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">出版社</label>
+              <label className="text-[14px] text-[#6b6b6b]">出版社</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）講談社"
                 value={publisher}
                 onChange={(event) => setPublisher(event.target.value)}
               />
             </div>
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">発行年</label>
+              <label className="text-[14px] text-[#6b6b6b]">発行年</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）2024"
                 value={year}
                 onChange={(event) => setYear(event.target.value)}
@@ -316,18 +329,18 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">巻数</label>
+              <label className="text-[14px] text-[#6b6b6b]">巻数</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）1"
                 value={volume}
                 onChange={(event) => setVolume(event.target.value)}
               />
             </div>
             <div className="grid gap-1">
-              <label className="text-[10px] text-[#6b6b6b]">タグ</label>
+              <label className="text-[14px] text-[#6b6b6b]">タグ</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）文学, 長編"
                 value={tags}
                 onChange={(event) => setTags(event.target.value)}
@@ -335,20 +348,20 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             </div>
           </div>
           <div className="grid gap-1">
-            <label className="text-[10px] text-[#6b6b6b]">
+            <label className="text-[14px] text-[#6b6b6b]">
               サムネイルURL
             </label>
             <input
-              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="https://..."
               value={imageUrl}
               onChange={(event) => setImageUrl(event.target.value)}
             />
           </div>
           <div className="grid gap-1">
-            <label className="text-[10px] text-[#6b6b6b]">メモ</label>
+            <label className="text-[14px] text-[#6b6b6b]">メモ</label>
             <textarea
-              className="min-h-[88px] w-full rounded-xl border border-[#f6f6f6] px-3 py-2 placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="min-h-[88px] w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="感想やメモ"
               value={memo}
               onChange={(event) => setMemo(event.target.value)}
@@ -359,14 +372,14 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         <div className="flex justify-end gap-2 border-t border-[#f2f2f2] px-4 py-4">
           <button
             type="button"
-            className="rounded-full border border-[#f6f6f6] px-3 py-1.5 text-[11px] text-[#6b6b6b]"
+            className="rounded-full border border-[#f6f6f6] px-3 py-1.5 text-[14px] text-[#6b6b6b]"
             onClick={() => setVisible(false)}
           >
             キャンセル
           </button>
           <button
             type="button"
-            className={`rounded-full border px-4 py-1.5 text-[11px] ${
+            className={`rounded-full border px-4 py-1.5 text-[14px] ${
               isValid
                 ? "border-[#222] bg-[#222] text-[#f9f9f9]"
                 : "border-[#e0e0e0] bg-[#f3f3f3] text-[#9b9b9b]"

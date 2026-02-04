@@ -24,7 +24,7 @@ export default function MePage() {
             {isEditing && (
               <button
                 type="button"
-                className="absolute right-3 top-3 rounded-full border border-white/30 px-2 py-1 text-[10px] text-white"
+                className="absolute right-3 top-3 rounded-full border border-white/30 px-4 py-2 text-[12px] text-white"
               >
                 画像を変更
               </button>
@@ -60,7 +60,7 @@ export default function MePage() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#e6e6e6] px-3 py-2 text-[12px] text-[#6b6b6b]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#e6e6e6] px-4 py-2 text-[12px] text-[#6b6b6b]"
                 aria-label="編集"
                 onClick={() => setIsEditing((current) => !current)}
               >
@@ -83,13 +83,13 @@ export default function MePage() {
             {isEditing ? (
               <div className="grid gap-2">
                 <input
-                  className="w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[12px]"
+                  className="w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[16px]"
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
                   placeholder="表示名"
                 />
                 <textarea
-                  className="min-h-[96px] w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[12px]"
+                  className="min-h-[96px] w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[16px]"
                   value={profileText}
                   onChange={(event) => setProfileText(event.target.value)}
                   placeholder="プロフィール文を入力"
@@ -97,14 +97,14 @@ export default function MePage() {
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
-                    className="rounded-full border border-[#e6e6e6] px-3 py-1.5 text-[11px] text-[#6b6b6b]"
+                    className="rounded-full border border-[#e6e6e6] px-4 py-2 text-[14px] text-[#6b6b6b]"
                     onClick={() => setIsEditing(false)}
                   >
                     キャンセル
                   </button>
                   <button
                     type="button"
-                    className="rounded-full border border-[#222] bg-[#222] px-3 py-1.5 text-[11px] text-[#f9f9f9]"
+                    className="rounded-full border border-[#222] bg-[#222] px-4 py-2 text-[14px] text-[#f9f9f9]"
                     onClick={() => setIsEditing(false)}
                   >
                     保存

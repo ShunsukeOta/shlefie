@@ -629,7 +629,7 @@ export default function Home() {
                       <p className="text-[12px] text-[#6b6b6b]">
                         {activeBook.author}
                       </p>
-                      <dl className="mt-3 grid text-[10px]">
+                      <dl className="mt-3 grid text-[12px]">
                         {[
                           { label: "進捗", value: activeBook.status },
                           {
