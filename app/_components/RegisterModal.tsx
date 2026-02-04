@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLibrary } from "./LibraryProvider";
 import { useNetworkStatus } from "./NetworkStatusProvider";
 
@@ -37,6 +37,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [memo, setMemo] = useState("");
   const [suppressSearch, setSuppressSearch] = useState(false);
+  const searchCache = useRef(new Map<string, typeof searchResults>());
 
   const isValid = useMemo(() => title.trim().length > 0, [title]);
 
@@ -45,14 +46,20 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       setSuppressSearch(false);
       return;
     }
-    if (!title.trim()) {
+    const trimmed = title.trim();
+    if (!trimmed) {
       setSearchResults([]);
       setSearchError("");
       return;
     }
+    if (trimmed.length < 2) {
+      setSearchResults([]);
+      setSearchError("2文字以上で検索できます。");
+      return;
+    }
     const timer = window.setTimeout(() => {
-      runSearch(title);
-    }, 300);
+      runSearch(trimmed);
+    }, 500);
     return () => window.clearTimeout(timer);
   }, [title]);
 
@@ -60,6 +67,13 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
     if (!requireOnline()) return;
     const trimmed = query.trim();
     if (!trimmed) return;
+    if (trimmed.length < 2) return;
+    const cached = searchCache.current.get(trimmed);
+    if (cached) {
+      setSearchError("");
+      setSearchResults(cached);
+      return;
+    }
     setIsSearching(true);
     setSearchError("");
     setSearchResults([]);
@@ -93,6 +107,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           imageUrl: info.imageLinks?.thumbnail,
         };
       });
+      searchCache.current.set(trimmed, mapped);
       setSearchResults(mapped);
       if (mapped.length === 0) {
         setSearchError("検索結果がありません。");
@@ -196,7 +211,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             <label className="text-[14px] text-[#6b6b6b]">タイトル</label>
             <div className="flex items-center gap-2 rounded-xl border border-[#f6f6f6] bg-white px-3 py-2">
               <input
-                className="w-full bg-transparent text-[14px] text-[#222] outline-none placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0"
+                className="w-full bg-transparent text-[16px] text-[#222] outline-none placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0"
                 placeholder="例）ノルウェイの森"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
@@ -270,9 +285,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             )}
           </div>
           <div className="grid gap-1">
-            <label className="text-[14px] text-[#6b6b6b]">著者</label>
+            <label className="text-[12px] text-[#6b6b6b]">著者</label>
             <input
-              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="例）村上 春樹"
               value={author}
               onChange={(event) => setAuthor(event.target.value)}
@@ -280,9 +295,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">種別</label>
+              <label className="text-[12px] text-[#6b6b6b]">種別</label>
               <select
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
@@ -294,9 +309,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
               </select>
             </div>
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">進捗</label>
+              <label className="text-[12px] text-[#6b6b6b]">進捗</label>
               <select
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 value={statusKey}
                 onChange={(event) => setStatusKey(event.target.value)}
               >
@@ -309,18 +324,18 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">出版社</label>
+              <label className="text-[12px] text-[#6b6b6b]">出版社</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）講談社"
                 value={publisher}
                 onChange={(event) => setPublisher(event.target.value)}
               />
             </div>
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">発行年</label>
+              <label className="text-[12px] text-[#6b6b6b]">発行年</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）2024"
                 value={year}
                 onChange={(event) => setYear(event.target.value)}
@@ -329,18 +344,18 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">巻数</label>
+              <label className="text-[12px] text-[#6b6b6b]">巻数</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）1"
                 value={volume}
                 onChange={(event) => setVolume(event.target.value)}
               />
             </div>
             <div className="grid gap-1">
-              <label className="text-[14px] text-[#6b6b6b]">タグ</label>
+              <label className="text-[12px] text-[#6b6b6b]">タグ</label>
               <input
-                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+                className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
                 placeholder="例）文学, 長編"
                 value={tags}
                 onChange={(event) => setTags(event.target.value)}
@@ -348,20 +363,20 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             </div>
           </div>
           <div className="grid gap-1">
-            <label className="text-[14px] text-[#6b6b6b]">
+            <label className="text-[12px] text-[#6b6b6b]">
               サムネイルURL
             </label>
             <input
-              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="https://..."
               value={imageUrl}
               onChange={(event) => setImageUrl(event.target.value)}
             />
           </div>
           <div className="grid gap-1">
-            <label className="text-[14px] text-[#6b6b6b]">メモ</label>
+            <label className="text-[12px] text-[#6b6b6b]">メモ</label>
             <textarea
-              className="min-h-[88px] w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[14px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
+              className="min-h-[88px] w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
               placeholder="感想やメモ"
               value={memo}
               onChange={(event) => setMemo(event.target.value)}

@@ -1,40 +1,186 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import BottomNav from "../_components/BottomNav";
 import TopBar from "../_components/TopBar";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useLibrary } from "../_components/LibraryProvider";
+import { auth } from "../_lib/firebase";
+import { db } from "../_lib/firebase";
 
 export default function MePage() {
+  const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+  const [logoutBusy, setLogoutBusy] = useState(false);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saveToast, setSaveToast] = useState(false);
   const [displayName, setDisplayName] = useState("shelfie user");
+  const [savedDisplayName, setSavedDisplayName] = useState("shelfie user");
   const [handle, setHandle] = useState("@shelfie_user");
   const [profileText, setProfileText] = useState(
     "最近は日本文学を読み直しています。気になる本があれば教えてください。"
   );
+  const [savedProfileText, setSavedProfileText] = useState(
+    "最近は日本文学を読み直しています。気になる本があれば教えてください。"
+  );
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const handleInitial = (handle.replace(/^@/, "").trim().slice(0, 1) ||
+    displayName.trim().slice(0, 1) ||
+    "S"
+  ).toUpperCase();
   const { logs: recentLogs, books } = useLibrary();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (nextUser) => {
+      setUser(nextUser);
+      if (!nextUser) return;
+      try {
+        const snap = await getDoc(doc(db, "users", nextUser.uid));
+        const data = snap.data() as
+          | { displayName?: string; handle?: string; photoURL?: string; bio?: string }
+          | undefined;
+        if (data?.displayName) {
+          setDisplayName(data.displayName);
+          setSavedDisplayName(data.displayName);
+        } else if (nextUser.displayName) {
+          setDisplayName(nextUser.displayName);
+          setSavedDisplayName(nextUser.displayName);
+        }
+        if (data?.bio) {
+          setProfileText(data.bio);
+          setSavedProfileText(data.bio);
+        }
+        if (data?.handle) {
+          setHandle(data.handle.startsWith("@") ? data.handle : `@${data.handle}`);
+        }
+        if (data?.photoURL) {
+          setProfileImage(data.photoURL);
+        } else if (nextUser.photoURL) {
+          setProfileImage(nextUser.photoURL);
+        } else {
+          setProfileImage(null);
+        }
+      } catch {
+        if (nextUser.displayName) {
+          setDisplayName(nextUser.displayName);
+          setSavedDisplayName(nextUser.displayName);
+        }
+        setProfileText(savedProfileText);
+        if (nextUser.photoURL) {
+          setProfileImage(nextUser.photoURL);
+        } else {
+          setProfileImage(null);
+        }
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  const handleLogout = async () => {
+    setLogoutBusy(true);
+    try {
+      await signOut(auth);
+    } finally {
+      setLogoutBusy(false);
+      setShowLogout(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    const nextName = displayName.trim();
+    const nextBio = profileText.trim();
+    setSaveBusy(true);
+    setSaveError("");
+    try {
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          displayName: nextName || "ユーザー",
+          bio: nextBio,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+      setSavedDisplayName(nextName || "ユーザー");
+      setSavedProfileText(nextBio);
+      setIsEditing(false);
+      setSaveToast(true);
+    } catch {
+      setSaveError("保存に失敗しました。時間をおいて再度お試しください。");
+    } finally {
+      setSaveBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!saveToast) return;
+    const timer = window.setTimeout(() => setSaveToast(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [saveToast]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TopBar title="" />
+      <TopBar
+        title="マイページ"
+        rightSlot={
+          <button
+            type="button"
+            aria-label="ログアウト"
+            className="grid h-9 w-9 place-items-center text-white"
+            onClick={() => setShowLogout(true)}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 12h10" />
+              <path d="m15 8 4 4-4 4" />
+              <path d="M4 5h6" />
+              <path d="M4 19h6" />
+              <path d="M4 5v14" />
+            </svg>
+          </button>
+        }
+      />
       <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto pb-[84px] hide-scrollbar">
         <section className="overflow-hidden bg-white">
-          <div className="relative h-32 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
-            {isEditing && (
-              <button
-                type="button"
-                className="absolute right-3 top-3 rounded-full border border-white/30 px-4 py-2 text-[12px] text-white"
-              >
-                画像を変更
-              </button>
-            )}
-          </div>
+            <div className="relative h-32 bg-[linear-gradient(135deg,#222222,#4b4b4b)]">
+              {isEditing && (
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 rounded-full border border-white/30 px-4 py-2 text-[12px] text-white"
+                >
+                  画像を変更
+                </button>
+              )}
+            </div>
           <div className="grid gap-2 p-3 pt-3">
             <div className="flex items-start justify-between">
               <div className="-mt-14 relative z-10">
                 <div className="relative h-22 w-22 rounded-full border-2 border-white bg-[#f3f3f3]">
-                  <div className="h-full w-full rounded-full bg-[linear-gradient(135deg,#eeeeee,#d8d8d8)]" />
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt={displayName}
+                      className="h-full w-full rounded-full object-cover"
+                      onError={() => setProfileImage(null)}
+                    />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center rounded-full bg-[linear-gradient(135deg,#eeeeee,#d8d8d8)] text-[18px] font-semibold leading-none text-[#6b6b6b]">
+                      <span className="whitespace-nowrap">{handleInitial}</span>
+                    </div>
+                  )}
                   {isEditing && (
                     <button
                       type="button"
@@ -98,18 +244,27 @@ export default function MePage() {
                   <button
                     type="button"
                     className="rounded-full border border-[#e6e6e6] px-4 py-2 text-[14px] text-[#6b6b6b]"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setDisplayName(savedDisplayName);
+                      setProfileText(savedProfileText);
+                      setSaveError("");
+                      setIsEditing(false);
+                    }}
                   >
                     キャンセル
                   </button>
                   <button
                     type="button"
                     className="rounded-full border border-[#222] bg-[#222] px-4 py-2 text-[14px] text-[#f9f9f9]"
-                    onClick={() => setIsEditing(false)}
+                    onClick={handleSaveProfile}
+                    disabled={saveBusy}
                   >
                     保存
                   </button>
                 </div>
+                {saveError && (
+                  <p className="text-[12px] text-[#b04a4a]">{saveError}</p>
+                )}
               </div>
             ) : (
               <div className="grid gap-1 text-left">
@@ -209,7 +364,46 @@ export default function MePage() {
             </div>
           </div>
         </section>
-      </main>
+        {showLogout && (
+          <div className="fixed inset-0 z-20 flex items-center justify-center px-4">
+            <button
+              type="button"
+              className="modal-backdrop absolute inset-0 bg-black/25"
+              aria-label="閉じる"
+              onClick={() => setShowLogout(false)}
+            />
+            <div className="relative w-full max-w-[320px] rounded-2xl bg-white p-4 text-[14px] shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+              <p className="text-[16px] font-semibold">ログアウトしますか？</p>
+              <p className="mt-1 text-[12px] text-[#6b6b6b]">
+                保存内容はこの端末とアカウントに残ります。
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  className="rounded-full border border-[#e6e6e6] px-3 py-2 text-[14px] text-[#222]"
+                  onClick={() => setShowLogout(false)}
+                  disabled={logoutBusy}
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-[#222] bg-[#222] px-3 py-2 text-[14px] text-[#f9f9f9]"
+                  onClick={handleLogout}
+                  disabled={logoutBusy}
+                >
+                  ログアウト
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        </main>
+        {saveToast && (
+          <div className="fixed top-[72px] left-1/2 z-30 -translate-x-1/2 rounded-full bg-[#222] px-4 py-2 text-[12px] text-[#f9f9f9] shadow-[0_8px_20px_rgba(0,0,0,0.2)]">
+            保存しました
+          </div>
+        )}
       <BottomNav active="me" />
     </div>
   );

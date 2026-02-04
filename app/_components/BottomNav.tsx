@@ -41,14 +41,18 @@ export default function BottomNav({ active }: BottomNavProps) {
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-full w-full fill-current"
+          className="h-full w-full"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <circle cx="6" cy="6.5" r="2" />
-          <circle cx="6" cy="12" r="2" />
-          <circle cx="6" cy="17.5" r="2" />
-          <rect x="10" y="5.5" width="9" height="2" rx="1" />
-          <rect x="10" y="11" width="9" height="2" rx="1" />
-          <rect x="10" y="16.5" width="9" height="2" rx="1" />
+          <path d="M5 7h9" />
+          <path d="M5 12h7" />
+          <path d="M5 17h5" />
+          <circle cx="18" cy="15" r="3" />
+          <path d="M18 13.5v1.5l1 1" />
         </svg>
       ),
     },
@@ -60,11 +64,18 @@ export default function BottomNav({ active }: BottomNavProps) {
         <svg
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="h-full w-full fill-current"
+          className="h-full w-full"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <rect x="5" y="6" width="14" height="2" rx="1" />
-          <rect x="5" y="11" width="10" height="2" rx="1" />
-          <rect x="5" y="16" width="12" height="2" rx="1" />
+          <path d="M4 16l5-5 4 3 7-8" />
+          <circle cx="4" cy="16" r="1.5" />
+          <circle cx="9" cy="11" r="1.5" />
+          <circle cx="13" cy="14" r="1.5" />
+          <circle cx="20" cy="6" r="1.5" />
         </svg>
       ),
     },

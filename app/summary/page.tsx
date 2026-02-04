@@ -179,7 +179,7 @@ export default function SummaryPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TopBar title="" />
+      <TopBar title="まとめ" />
       <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
         <div className="grid gap-3">
           <div className="inline-flex items-center gap-1 rounded-full bg-[#f1f1f1] p-1">

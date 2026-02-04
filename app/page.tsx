@@ -136,159 +136,120 @@ export default function Home() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TopBar title="" />
-      <main className="scroll-pane mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden px-4 pt-2 pb-0 text-left">
-        <section className="grid gap-2.5 pb-3">
-          <div className="flex flex-nowrap items-stretch gap-2">
-            <div className="flex-1 min-w-0 order-3 flex justify-end">
-              <button
-                type="button"
-                aria-pressed={layout === "list"}
-                aria-label={
-                  layout === "grid-4"
-                    ? "3列グリッドに切替"
-                    : layout === "grid-3"
-                      ? "リストに切替"
-                      : "4列グリッドに切替"
-                }
-                title={
-                  layout === "grid-4"
-                    ? "3列グリッドに切替"
-                    : layout === "grid-3"
-                      ? "リストに切替"
-                      : "4列グリッドに切替"
-                }
-                className="flex h-full aspect-square items-center justify-center rounded border border-[#e6e6e6] bg-white text-[#222]"
-                onClick={() =>
-                  setLayout((current) =>
-                    current === "grid-4" ? "grid-3" : current === "grid-3" ? "list" : "grid-4"
-                  )
-                }
+      <TopBar
+        title="本棚"
+        rightSlot={
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="タグ"
+              className="grid h-9 w-9 place-items-center text-white"
+              onClick={() => {
+                setActiveSheet("status");
+                setSheetVisible(true);
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-5 w-5 fill-current"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="h-6 w-6 fill-current"
-                >
-                  {layout === "grid-4" ? (
-                    <>
-                      <rect x="4" y="6" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="8.9" y="6" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="13.8" y="6" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="18.7" y="6" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="4" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="8.9" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="13.8" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                      <rect x="18.7" y="12.75" width="3.25" height="3.25" rx="0.9" />
-                    </>
-                  ) : layout === "grid-3" ? (
-                    <>
-                      <rect x="4" y="6" width="4.5" height="4.5" rx="1" />
-                      <rect x="9.75" y="6" width="4.5" height="4.5" rx="1" />
-                      <rect x="15.5" y="6" width="4.5" height="4.5" rx="1" />
-                      <rect x="4" y="13.5" width="4.5" height="4.5" rx="1" />
-                      <rect x="9.75" y="13.5" width="4.5" height="4.5" rx="1" />
-                      <rect x="15.5" y="13.5" width="4.5" height="4.5" rx="1" />
-                    </>
-                  ) : (
-                    <>
-                      <rect x="6" y="6.5" width="12" height="2.4" rx="1.2" />
-                      <rect x="6" y="11" width="12" height="2.4" rx="1.2" />
-                      <rect x="6" y="15.5" width="12" height="2.4" rx="1.2" />
-                    </>
-                  )}
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 min-w-0 order-1">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[14px] text-[#222]"
-                onClick={() => {
-                  setActiveSheet("status");
-                  setSheetVisible(true);
-                }}
+                <path
+                  fillRule="evenodd"
+                  d="M6 5h6l8 8a2 2 0 0 1 0 2.8l-4.2 4.2a2 2 0 0 1-2.8 0l-8-8V7a2 2 0 0 1 2-2Zm1.8 2.2a1.3 1.3 0 1 0 0 2.6a1.3 1.3 0 0 0 0-2.6Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              aria-pressed={layout === "list"}
+              aria-label={
+                layout === "grid-4"
+                  ? "3列グリッドに切替"
+                  : layout === "grid-3"
+                    ? "リストに切替"
+                    : "4列グリッドに切替"
+              }
+              title={
+                layout === "grid-4"
+                  ? "3列グリッドに切替"
+                  : layout === "grid-3"
+                    ? "リストに切替"
+                    : "4列グリッドに切替"
+              }
+              className="grid h-9 w-9 place-items-center text-white"
+              onClick={() =>
+                setLayout((current) =>
+                  current === "grid-4" ? "grid-3" : current === "grid-3" ? "list" : "grid-4"
+                )
+              }
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-5 w-5 fill-current"
               >
-                <span className="inline-flex items-center gap-1.5">
-                  <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    className="h-5 w-5 fill-current"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6 5h6l8 8a2 2 0 0 1 0 2.8l-4.2 4.2a2 2 0 0 1-2.8 0l-8-8V7a2 2 0 0 1 2-2Zm1.8 2.2a1.3 1.3 0 1 0 0 2.6a1.3 1.3 0 0 0 0-2.6Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span>
-                    {statusOptions.find(
-                      (option) => option.value === statusFilter
-                    )?.label ?? "すべて"}
-                  </span>
-                </span>
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 min-w-0 order-2">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[14px] text-[#222]"
-                onClick={() => {
-                  setActiveSheet("sort");
-                  setSheetVisible(true);
-                }}
+                {layout === "grid-4" ? (
+                  <>
+                    <rect x="4" y="6" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="8.9" y="6" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="13.8" y="6" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="18.7" y="6" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="4" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="8.9" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="13.8" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                    <rect x="18.7" y="12.75" width="3.25" height="3.25" rx="0.9" />
+                  </>
+                ) : layout === "grid-3" ? (
+                  <>
+                    <rect x="4" y="6" width="4.5" height="4.5" rx="1" />
+                    <rect x="9.75" y="6" width="4.5" height="4.5" rx="1" />
+                    <rect x="15.5" y="6" width="4.5" height="4.5" rx="1" />
+                    <rect x="4" y="13.5" width="4.5" height="4.5" rx="1" />
+                    <rect x="9.75" y="13.5" width="4.5" height="4.5" rx="1" />
+                    <rect x="15.5" y="13.5" width="4.5" height="4.5" rx="1" />
+                  </>
+                ) : (
+                  <>
+                    <rect x="6" y="6.5" width="12" height="2.4" rx="1.2" />
+                    <rect x="6" y="11" width="12" height="2.4" rx="1.2" />
+                    <rect x="6" y="15.5" width="12" height="2.4" rx="1.2" />
+                  </>
+                )}
+              </svg>
+            </button>
+            <button
+              type="button"
+              aria-label="並び順"
+              className="grid h-9 w-9 place-items-center text-white"
+              onClick={() => {
+                setActiveSheet("sort");
+                setSheetVisible(true);
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <span className="inline-flex items-center gap-1.5">
-                  <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M10 6h10" />
-                    <path d="M8 12h12" />
-                    <path d="M6 18h14" />
-                  </svg>
-                  <span>
-                    {sortOptions.find((option) => option.value === sortBy)
-                      ?.label ?? "最近"}
-                  </span>
-                </span>
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
-            </div>
+                <path d="M10 6h10" />
+                <path d="M8 12h12" />
+                <path d="M6 18h14" />
+              </svg>
+            </button>
           </div>
-        </section>
+        }
+      />
+      <main className="scroll-pane mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden px-4 pb-0 text-left">
 
         <div className="relative flex-1 min-h-0">
-          <div className="shelf-scroll hide-scrollbar h-full pb-[84px]">
+          <div className="shelf-scroll hide-scrollbar py-4 h-full pb-[84px]">
           <section
             className={`grid ${
               layout === "list" ? "grid-cols-1 gap-0" : "grid-cols-2 gap-2.5"
@@ -384,8 +345,20 @@ export default function Home() {
                   setBookVisible(true);
                 }}
               >
-                <p className="text-[12px] font-semibold">{book.title}</p>
-                <p className="text-[11px] text-[#6b6b6b]">{book.author}</p>
+                <p
+                  className={`font-semibold ${
+                    layout === "list" ? "text-[14px]" : "text-[12px]"
+                  }`}
+                >
+                  {book.title}
+                </p>
+                <p
+                  className={`text-[#6b6b6b] ${
+                    layout === "list" ? "text-[12px]" : "text-[11px]"
+                  }`}
+                >
+                  {book.author}
+                </p>
               </button>
               </article>
             ))}

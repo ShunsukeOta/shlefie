@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
+import AuthGate from "./_components/AuthGate";
 import PageTransition from "./_components/PageTransition";
 import RegisterModalProvider from "./_components/RegisterModalProvider";
 import LibraryProvider from "./_components/LibraryProvider";
@@ -51,7 +52,9 @@ export default function RootLayout({
         <LibraryProvider>
           <NetworkStatusProvider>
             <RegisterModalProvider>
-              <PageTransition>{children}</PageTransition>
+              <AuthGate>
+                <PageTransition>{children}</PageTransition>
+              </AuthGate>
             </RegisterModalProvider>
           </NetworkStatusProvider>
         </LibraryProvider>

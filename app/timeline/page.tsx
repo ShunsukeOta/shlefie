@@ -6,7 +6,7 @@ import TopBar from "../_components/TopBar";
 export default function TimelinePage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TopBar title="" />
+      <TopBar title="タイムライン" />
       <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
         <section className="rounded border border-[#e6e6e6] bg-white p-4">
           <h2 className="text-[14px] font-semibold">フォロー中のログ</h2>
