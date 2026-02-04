@@ -59,7 +59,6 @@
 @layer utilities {
   .shelf-scroll {
     overflow-y: auto;
-    padding-right: 4px;
     scrollbar-width: thin;
     scrollbar-color: #bdbdbd transparent;
   }

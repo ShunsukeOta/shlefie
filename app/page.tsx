@@ -141,9 +141,9 @@ export default function Home() {
       <TopBar title="" />
       <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden px-4 pt-3 pb-0 text-left">
         <section className="grid gap-2.5 pb-3">
-          <div className="grid grid-cols-3 gap-2">
-            <div className="grid">
-              <div className="inline-flex w-full items-center justify-center gap-1 rounded-full bg-[#f1f1f1] p-1">
+          <div className="flex flex-nowrap items-stretch gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex w-full items-center justify-between gap-1 rounded-full bg-[#f1f1f1] p-1">
                 {[
               {
                 key: "grid-2",
@@ -204,7 +204,7 @@ export default function Home() {
                     aria-pressed={layout === item.key}
                     aria-label={item.label}
                     title={item.label}
-                    className={`grid h-7 w-9 place-items-center rounded-full transition-colors ${
+                    className={`grid h-7 w-8 place-items-center rounded-full transition-colors ${
                       layout === item.key
                         ? "bg-white text-[#222]"
                         : "text-[#8b8b8b]"
@@ -226,7 +226,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="grid">
+            <div className="flex-1 min-w-0">
               <button
                 type="button"
                 className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[12px] text-[#222]"
@@ -267,7 +267,7 @@ export default function Home() {
                 </svg>
               </button>
             </div>
-            <div className="grid">
+            <div className="flex-1 min-w-0">
               <button
                 type="button"
                 className="flex w-full items-center justify-between gap-2 rounded border border-[#e6e6e6] bg-white px-2.5 py-2 text-[12px] text-[#222]"

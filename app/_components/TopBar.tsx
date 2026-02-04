@@ -9,7 +9,7 @@ export default function TopBar({ title, rightSlot }: TopBarProps) {
   return (
     <header
       className="w-full text-white flex-shrink-0"
-      style={{ backgroundColor: "#000000" }}
+      style={{ backgroundColor: "#000000", paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex w-full max-w-[480px] items-center justify-between px-4 py-4 text-white">
         <div className="flex items-center gap-2 text-[15px] font-medium tracking-[0.02em]">

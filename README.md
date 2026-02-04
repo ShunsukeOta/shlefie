@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shelfie
 
-## Getting Started
+Shelfie は「読書のログが、静かに積み重なる」ことを大切にした、モバイルファーストの本棚アプリです。  
+読む・積む・登録するという小さな行動が、あとから振り返れる“自分の読書の流れ”になります。
 
-First, run the development server:
+## コンセプト
+- 読書の記録を **軽く、途切れずに残す**
+- 本棚・タイムライン・まとめで **読書の流れを立体的に見る**
+- 余計なノイズを減らし、**画面に集中できるUI** を目指す
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 体験の軸
+- **Shelf**: 自分の本棚を、状態（未読 / 積読 / 読書中 / 読了）で管理
+- **Timeline**: 将来的に、フォローしている人のログを横串で見る
+- **Summary**: 読書の傾向や活動を、振り返りやすく可視化
+- **MyPage**: 自分のプロフィールと最近のログをまとめる場所
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## デザイン方針
+- アプリらしい固定ヘッダーと、コンテンツだけのスクロール
+- 画面の余白を丁寧に扱い、触感のあるUIを目指す
+- スクロールバーを隠し、コンテンツに集中できる見た目
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 目的
+Shelfie は「読書の記録を義務にしない」ことを大切にしています。  
+“続けたくなる”記録体験を作るためのプロダクトです。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 今後の予定（通知）
+- PWA の通知機能を後日実装予定
+- まずはローカル通知の体験検証 → 必要に応じて Push 通知へ拡張
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 開発ステータス
+MVP 段階。PWA を前提に UI と体験を設計中。
