@@ -1,7 +1,7 @@
 "use client";
 
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocFromServer } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { auth, db } from "../_lib/firebase";
@@ -24,9 +24,16 @@ export default function AuthGate({ children }: AuthGateProps) {
         setChecking(false);
         return;
       }
-      const snap = await getDoc(doc(db, "users", nextUser.uid));
+      const userRef = doc(db, "users", nextUser.uid);
+      let snap;
+      try {
+        snap = await getDocFromServer(userRef);
+      } catch {
+        snap = await getDoc(userRef);
+      }
       const data = snap.data() as { handle?: string } | undefined;
-      if (!data?.handle && pathname !== "/account-setup") {
+      const handle = typeof data?.handle === "string" ? data.handle.trim() : "";
+      if (!handle && pathname !== "/account-setup") {
         router.push("/account-setup");
         return;
       }

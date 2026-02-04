@@ -1,7 +1,7 @@
 "use client";
 
 import { GoogleAuthProvider, signInWithPopup, type User } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, getDocFromServer, serverTimestamp, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { auth, db } from "../_lib/firebase";
@@ -16,22 +16,55 @@ export default function LoginScreen({ onLoggedIn }: LoginScreenProps) {
   const [busy, setBusy] = useState(false);
 
   const ensureUserDoc = async (user: User) => {
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-        displayName: user.displayName ?? "ユーザー",
-        photoURL: user.photoURL ?? "",
-        bio: "",
-        createdAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+    const userRef = doc(db, "users", user.uid);
+    let snap;
+    try {
+      snap = await getDocFromServer(userRef);
+    } catch {
+      snap = await getDoc(userRef);
+    }
+    const data = snap.data() as
+      | { displayName?: string; photoURL?: string; bio?: string; createdAt?: unknown }
+      | undefined;
+
+    const payload: {
+      displayName?: string;
+      photoURL?: string;
+      bio?: string;
+      createdAt?: ReturnType<typeof serverTimestamp>;
+    } = {};
+
+    if (!data?.displayName) {
+      payload.displayName = user.displayName ?? "ユーザー";
+    }
+    if (!data?.photoURL) {
+      payload.photoURL = user.photoURL ?? "";
+    }
+    if (data?.bio === undefined) {
+      payload.bio = "";
+    }
+    if (!data?.createdAt) {
+      payload.createdAt = serverTimestamp();
+    }
+
+    if (Object.keys(payload).length === 0) {
+      return;
+    }
+
+    await setDoc(userRef, payload, { merge: true });
   };
 
   const checkNeedsSetup = async (user: User) => {
-    const snap = await getDoc(doc(db, "users", user.uid));
+    const userRef = doc(db, "users", user.uid);
+    let snap;
+    try {
+      snap = await getDocFromServer(userRef);
+    } catch {
+      snap = await getDoc(userRef);
+    }
     const data = snap.data() as { handle?: string } | undefined;
-    return !data?.handle;
+    const handle = typeof data?.handle === "string" ? data.handle.trim() : "";
+    return !handle;
   };
 
   const handleLogin = async (redirectToSetup: boolean) => {

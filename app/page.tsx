@@ -24,6 +24,7 @@ export default function Home() {
   const [activeBook, setActiveBook] = useState<Book | null>(null);
   const [bookVisible, setBookVisible] = useState(false);
   const [isBookEditing, setIsBookEditing] = useState(false);
+  const [isBookSaving, setIsBookSaving] = useState(false);
   const [editForm, setEditForm] = useState({
     title: "",
     author: "",
@@ -132,6 +133,69 @@ export default function Home() {
     }
     return undefined;
   }, [bookVisible, activeBook]);
+
+  useEffect(() => {
+    if (!activeBook) return;
+    const refreshed = books.find((book) => book.id === activeBook.id);
+    if (refreshed && refreshed !== activeBook) {
+      setActiveBook(refreshed);
+    }
+  }, [books, activeBook]);
+
+  const handleSaveBook = async () => {
+    if (!activeBook || isBookSaving) return;
+    const nextStatusKey = editForm.statusKey as
+      | "unread"
+      | "stack"
+      | "reading"
+      | "done";
+    const nextStatus =
+      nextStatusKey === "unread"
+        ? "未読"
+        : nextStatusKey === "stack"
+          ? "積読"
+          : nextStatusKey === "reading"
+            ? "読書中"
+            : "読了";
+    const nextUpdatedAt = new Date().toISOString().slice(0, 10);
+    const nextTitle = editForm.title.trim() || activeBook.title;
+    const nextAuthor = editForm.author;
+
+    setActiveBook({
+      ...activeBook,
+      title: nextTitle,
+      author: nextAuthor,
+      statusKey: nextStatusKey,
+      status: nextStatus,
+      updatedAt: nextUpdatedAt,
+      category: editForm.category,
+      publisher: editForm.publisher,
+      year: editForm.year,
+      volume: editForm.volume,
+      tags: editForm.tags,
+      memo: editForm.memo,
+      imageUrl: editForm.imageUrl || undefined,
+    });
+
+    setIsBookSaving(true);
+    try {
+      await updateBook(activeBook.id, {
+        title: nextTitle,
+        author: nextAuthor,
+        statusKey: nextStatusKey,
+        category: editForm.category,
+        publisher: editForm.publisher,
+        year: editForm.year,
+        volume: editForm.volume,
+        tags: editForm.tags,
+        memo: editForm.memo,
+        imageUrl: editForm.imageUrl || undefined,
+      });
+    } finally {
+      setIsBookSaving(false);
+      setIsBookEditing(false);
+    }
+  };
 
 
   return (
@@ -250,27 +314,32 @@ export default function Home() {
 
         <div className="relative flex-1 min-h-0">
           <div className="shelf-scroll hide-scrollbar py-4 h-full pb-[84px]">
-          <section
-            className={`grid ${
-              layout === "list" ? "grid-cols-1 gap-0" : "grid-cols-2 gap-2.5"
-            }`}
-            style={
-              layout === "grid-3"
-                ? { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }
-                : layout === "grid-4"
-                  ? { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }
-                  : undefined
-            }
-          >
-            {filteredBooks.map((book) => (
-              <article
-                key={book.id}
-                className={`grid overflow-hidden rounded-none ${
-                  layout === "list"
-                    ? "grid-cols-[68px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] bg-transparent py-1.5"
-                    : "border border-[#e6e6e6] bg-white"
-                }`}
-              >
+          {filteredBooks.length === 0 ? (
+            <div className="rounded border border-[#e6e6e6] bg-white px-3 py-12 text-center text-[12px] text-[#8b8b8b]">
+              登録した本がここに表示されます。
+            </div>
+          ) : (
+            <section
+              className={`grid ${
+                layout === "list" ? "grid-cols-1 gap-0" : "grid-cols-2 gap-2.5"
+              }`}
+              style={
+                layout === "grid-3"
+                  ? { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }
+                  : layout === "grid-4"
+                    ? { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }
+                    : undefined
+              }
+            >
+              {filteredBooks.map((book) => (
+                <article
+                  key={book.id}
+                  className={`grid overflow-hidden rounded-none ${
+                    layout === "list"
+                      ? "grid-cols-[68px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] bg-transparent py-1.5"
+                      : "border border-[#e6e6e6] bg-white"
+                  }`}
+                >
                 <div
                   className={`relative w-full ${
                     layout === "list" ? "w-[68px]" : ""
@@ -360,9 +429,10 @@ export default function Home() {
                   {book.author}
                 </p>
               </button>
-              </article>
-            ))}
-          </section>
+                </article>
+              ))}
+            </section>
+          )}
           </div>
         </div>
         {activeBook && (
@@ -553,6 +623,7 @@ export default function Home() {
                           type="button"
                           className="rounded-full border border-[#e6e6e6] px-3 py-2 text-[14px] text-[#6b6b6b]"
                           onClick={() => setIsBookEditing(false)}
+                          disabled={isBookSaving}
                         >
                           キャンセル
                         </button>
@@ -566,34 +637,17 @@ export default function Home() {
                             setBookVisible(false);
                             setActiveBook(null);
                           }}
+                          disabled={isBookSaving}
                         >
                           削除
                         </button>
                         <button
                           type="button"
                           className="rounded-full border border-[#222] bg-[#222] px-3 py-2 text-[14px] text-[#f9f9f9]"
-                          onClick={() => {
-                            if (!activeBook) return;
-                            updateBook(activeBook.id, {
-                              title: editForm.title.trim() || activeBook.title,
-                              author: editForm.author,
-                              statusKey: editForm.statusKey as
-                                | "unread"
-                                | "stack"
-                                | "reading"
-                                | "done",
-                              category: editForm.category,
-                              publisher: editForm.publisher,
-                              year: editForm.year,
-                              volume: editForm.volume,
-                              tags: editForm.tags,
-                              memo: editForm.memo,
-                              imageUrl: editForm.imageUrl || undefined,
-                            });
-                            setIsBookEditing(false);
-                          }}
+                          onClick={handleSaveBook}
+                          disabled={isBookSaving}
                         >
-                          保存
+                          {isBookSaving ? "保存中..." : "保存"}
                         </button>
                       </div>
                     </div>

@@ -22,10 +22,10 @@ export default function MePage() {
   const [savedDisplayName, setSavedDisplayName] = useState("shelfie user");
   const [handle, setHandle] = useState("@shelfie_user");
   const [profileText, setProfileText] = useState(
-    "最近は日本文学を読み直しています。気になる本があれば教えてください。"
+    ""
   );
   const [savedProfileText, setSavedProfileText] = useState(
-    "最近は日本文学を読み直しています。気になる本があれば教えてください。"
+    ""
   );
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const handleInitial = (handle.replace(/^@/, "").trim().slice(0, 1) ||
@@ -312,54 +312,60 @@ export default function MePage() {
             <div className="mt-3">
               <h2 className="text-[14px] font-semibold">最近のログ</h2>
               <section className="mt-2 grid gap-0">
-                {recentLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
-                  >
-                    <div className="relative">
-                      <div className="aspect-[3/4] w-[56px] overflow-hidden bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]">
-                        {log.imageUrl ? (
-                          <img
-                            src={log.imageUrl}
-                            alt={`${log.title} カバー`}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
-                        )}
-                      </div>
-                      <span
-                        className={`absolute left-1 top-1 rounded-[2px] px-1 py-[2px] text-[9px] leading-none text-white ${
-                          log.statusKey === "unread"
-                            ? "bg-[#8c8c8c]"
-                            : log.statusKey === "stack"
-                              ? "bg-[#2f5fbf]"
-                              : log.statusKey === "reading"
-                                ? "bg-[#c36a1e]"
-                                : "bg-[#2f8a4a]"
-                        }`}
-                      >
-                        {log.status}
-                      </span>
-                    </div>
-                    <div className="grid gap-0.5 text-left">
-                      <p className="text-[12px] text-[#222]">
-                        <strong className="font-semibold">{log.title}</strong>
-                        {log.message?.includes("本棚から削除しました。")
-                          ? "を本棚から削除しました。"
-                          : log.message?.includes("本棚に登録しました。")
-                            ? "を本棚に登録しました。"
-                            : log.status
-                              ? `を「${log.status}」に変更しました。`
-                              : "を本棚に登録しました。"}
-                      </p>
-                      <span className="text-[10px] text-[#6b6b6b]">
-                        {log.time}
-                      </span>
-                    </div>
+                {recentLogs.length === 0 ? (
+                  <div className="rounded border border-[#e6e6e6] bg-white px-3 py-8 text-center text-[12px] text-[#8b8b8b]">
+                    ここに最近のログが表示されます。
                   </div>
-                ))}
+                ) : (
+                  recentLogs.map((log) => (
+                    <div
+                      key={log.id}
+                      className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
+                    >
+                      <div className="relative">
+                        <div className="aspect-[3/4] w-[56px] overflow-hidden bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]">
+                          {log.imageUrl ? (
+                            <img
+                              src={log.imageUrl}
+                              alt={`${log.title} カバー`}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
+                          )}
+                        </div>
+                        <span
+                          className={`absolute left-1 top-1 rounded-[2px] px-1 py-[2px] text-[9px] leading-none text-white ${
+                            log.statusKey === "unread"
+                              ? "bg-[#8c8c8c]"
+                              : log.statusKey === "stack"
+                                ? "bg-[#2f5fbf]"
+                                : log.statusKey === "reading"
+                                  ? "bg-[#c36a1e]"
+                                  : "bg-[#2f8a4a]"
+                          }`}
+                        >
+                          {log.status}
+                        </span>
+                      </div>
+                      <div className="grid gap-0.5 text-left">
+                        <p className="text-[12px] text-[#222]">
+                          <strong className="font-semibold">{log.title}</strong>
+                          {log.message?.includes("本棚から削除しました。")
+                            ? "を本棚から削除しました。"
+                            : log.message?.includes("本棚に登録しました。")
+                              ? "を本棚に登録しました。"
+                              : log.status
+                                ? `を「${log.status}」に変更しました。`
+                                : "を本棚に登録しました。"}
+                        </p>
+                        <span className="text-[10px] text-[#6b6b6b]">
+                          {log.time}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </section>
             </div>
           </div>
