@@ -25,6 +25,9 @@ export default function Home() {
   const [bookVisible, setBookVisible] = useState(false);
   const [isBookEditing, setIsBookEditing] = useState(false);
   const [isBookSaving, setIsBookSaving] = useState(false);
+  const [coverBusy, setCoverBusy] = useState(false);
+  const [coverError, setCoverError] = useState("");
+  const [coverCandidates, setCoverCandidates] = useState<string[]>([]);
   const [editForm, setEditForm] = useState({
     title: "",
     author: "",
@@ -118,6 +121,8 @@ export default function Home() {
         memo: activeBook.memo ?? "",
         imageUrl: activeBook.imageUrl ?? "",
       });
+      setCoverError("");
+      setCoverCandidates([]);
       const frame = requestAnimationFrame(() => setBookVisible(true));
       return () => cancelAnimationFrame(frame);
     }
@@ -194,6 +199,42 @@ export default function Home() {
     } finally {
       setIsBookSaving(false);
       setIsBookEditing(false);
+    }
+  };
+
+  const handleFetchCover = async () => {
+    if (coverBusy) return;
+    const query = [editForm.title.trim(), editForm.author.trim()]
+      .filter(Boolean)
+      .join(" ");
+    if (!query) {
+      setCoverError("タイトルか著者名を入力してください。");
+      return;
+    }
+    setCoverBusy(true);
+    setCoverError("");
+    try {
+      const url = `/api/search/google?q=${encodeURIComponent(query)}`;
+      const resp = await fetch(url, { cache: "no-store" });
+      const data = await resp.json();
+      const items = Array.isArray(data.items) ? data.items : [];
+      const thumbnails = items
+        .map((item: any) => item?.volumeInfo?.imageLinks?.thumbnail)
+        .filter((value: unknown): value is string => typeof value === "string")
+        .slice(0, 4);
+      if (thumbnails.length === 0) {
+        setCoverError("サムネイルが見つかりませんでした。");
+        return;
+      }
+      setCoverCandidates(thumbnails);
+      setEditForm((current) => ({
+        ...current,
+        imageUrl: thumbnails[0],
+      }));
+    } catch {
+      setCoverError("サムネイル取得に失敗しました。");
+    } finally {
+      setCoverBusy(false);
     }
   };
 
@@ -446,46 +487,103 @@ export default function Home() {
               onClick={() => setBookVisible(false)}
             />
             <div
-              className={`modal-card relative w-full max-w-[360px] overflow-hidden rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.25)] ${
+              className={`modal-card relative w-full max-w-[440px] overflow-hidden rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.25)] ${
                 bookVisible ? "opacity-100" : "opacity-0"
               }`}
             >
-              <div className="grid grid-cols-[112px_1fr] gap-3 p-4">
-                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-[#e6e6e6]">
-                  {activeBook.imageUrl ? (
-                    <img
-                      src={activeBook.imageUrl}
-                      alt={`${activeBook.title} カバー`}
-                      className="absolute inset-0 block h-full w-full object-cover"
-                    />
-                  ) : activeBook.fallbackCover ? (
-                    <img
-                      src={activeBook.fallbackCover}
-                      alt={`${activeBook.title} ダミーカバー`}
-                      className="absolute inset-0 block h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
-                  )}
-                </div>
-                <div className="grid content-start gap-1 text-left">
-                  <div className="flex items-start justify-between gap-2">
-                    {isBookEditing ? (
-                      <input
-                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[16px]"
-                        value={editForm.title}
-                        onChange={(event) =>
-                          setEditForm((current) => ({
-                            ...current,
-                            title: event.target.value,
-                          }))
-                        }
+              <div className="grid grid-cols-[112px_1fr] items-start gap-3 p-4">
+                <div className="grid gap-2 self-start">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-[#e6e6e6]">
+                    {editForm.imageUrl ? (
+                      <img
+                        src={editForm.imageUrl}
+                        alt={`${activeBook.title} カバー`}
+                        className="absolute inset-0 block h-full w-full object-cover"
+                      />
+                    ) : activeBook.fallbackCover ? (
+                      <img
+                        src={activeBook.fallbackCover}
+                        alt={`${activeBook.title} ダミーカバー`}
+                        className="absolute inset-0 block h-full w-full object-cover"
                       />
                     ) : (
-                      <p className="text-[14px] font-semibold">
-                        {activeBook.title}
-                      </p>
+                      <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
                     )}
+                  </div>
+                  {isBookEditing && (
+                    <>
+                      <button
+                        type="button"
+                        className="rounded-full border border-[#e6e6e6] px-3 py-1.5 text-[12px] text-[#222]"
+                        onClick={handleFetchCover}
+                        disabled={coverBusy}
+                      >
+                        {coverBusy ? "取得中..." : "サムネイル取得"}
+                      </button>
+                      {coverError && (
+                        <span className="text-[12px] text-[#b04a4a]">
+                          {coverError}
+                        </span>
+                      )}
+                      {coverCandidates.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {coverCandidates.map((src) => {
+                            const selected = editForm.imageUrl === src;
+                            return (
+                              <button
+                                key={src}
+                                type="button"
+                                className={`overflow-hidden rounded border ${
+                                  selected
+                                    ? "border-[#222]"
+                                    : "border-[#e6e6e6]"
+                                }`}
+                                onClick={() =>
+                                  setEditForm((current) => ({
+                                    ...current,
+                                    imageUrl: src,
+                                  }))
+                                }
+                                aria-label="サムネイルを選択"
+                              >
+                                <img
+                                  src={src}
+                                  alt="サムネイル候補"
+                                  className="h-[72px] w-full object-cover"
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                <div className="grid content-start gap-2 text-left">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="grid w-full gap-1">
+                      {isBookEditing ? (
+                        <>
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            タイトル
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[16px]"
+                            value={editForm.title}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                title: event.target.value,
+                              }))
+                            }
+                          />
+                        </>
+                      ) : (
+                        <p className="text-[14px] font-semibold">
+                          {activeBook.title}
+                        </p>
+                      )}
+                    </div>
                     <button
                       type="button"
                       className="grid h-7 w-7 place-items-center text-[#6b6b6b]"
@@ -508,116 +606,145 @@ export default function Home() {
                     </button>
                   </div>
                   {isBookEditing ? (
-                    <div className="grid gap-2 text-[16px]">
-                      <input
-                        className="w-full rounded border border-[#e6e6e6] px-2 py-1 text-[16px]"
-                        placeholder="著者"
-                        value={editForm.author}
-                        onChange={(event) =>
-                          setEditForm((current) => ({
-                            ...current,
-                            author: event.target.value,
-                          }))
-                        }
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <select
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-2"
-                          value={editForm.statusKey}
-                          onChange={(event) =>
-                            setEditForm((current) => ({
-                              ...current,
-                              statusKey: event.target.value,
-                            }))
-                          }
-                        >
-                          <option value="unread">未読</option>
-                          <option value="stack">積読</option>
-                          <option value="reading">読書中</option>
-                          <option value="done">読了</option>
-                        </select>
+                    <div className="grid gap-2.5 text-[16px]">
+                      <div className="grid gap-1">
+                        <label className="text-[12px] text-[#6b6b6b]">
+                          著者
+                        </label>
                         <input
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                          placeholder="種別"
-                          value={editForm.category}
+                          className="w-full rounded border border-[#e6e6e6] px-2.5 py-2 text-[16px]"
+                          placeholder="著者"
+                          value={editForm.author}
                           onChange={(event) =>
                             setEditForm((current) => ({
                               ...current,
-                              category: event.target.value,
+                              author: event.target.value,
                             }))
                           }
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                          placeholder="出版社"
-                          value={editForm.publisher}
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            進捗
+                          </label>
+                          <select
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            value={editForm.statusKey}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                statusKey: event.target.value,
+                              }))
+                            }
+                          >
+                            <option value="unread">未読</option>
+                            <option value="stack">積読</option>
+                            <option value="reading">読書中</option>
+                            <option value="done">読了</option>
+                          </select>
+                        </div>
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            種別
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            placeholder="種別"
+                            value={editForm.category}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                category: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            出版社
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            placeholder="出版社"
+                            value={editForm.publisher}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                publisher: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            発行年
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            placeholder="発行年"
+                            value={editForm.year}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                year: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            巻数
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            placeholder="巻数"
+                            value={editForm.volume}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                volume: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-1">
+                          <label className="text-[12px] text-[#6b6b6b]">
+                            タグ
+                          </label>
+                          <input
+                            className="w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                            placeholder="タグ"
+                            value={editForm.tags}
+                            onChange={(event) =>
+                              setEditForm((current) => ({
+                                ...current,
+                                tags: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="grid gap-1">
+                        <label className="text-[12px] text-[#6b6b6b]">
+                          メモ
+                        </label>
+                        <textarea
+                          className="min-h-[72px] w-full rounded border border-[#e6e6e6] px-2.5 py-2"
+                          placeholder="メモ"
+                          value={editForm.memo}
                           onChange={(event) =>
                             setEditForm((current) => ({
                               ...current,
-                              publisher: event.target.value,
-                            }))
-                          }
-                        />
-                        <input
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                          placeholder="発行年"
-                          value={editForm.year}
-                          onChange={(event) =>
-                            setEditForm((current) => ({
-                              ...current,
-                              year: event.target.value,
+                              memo: event.target.value,
                             }))
                           }
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                          placeholder="巻数"
-                          value={editForm.volume}
-                          onChange={(event) =>
-                            setEditForm((current) => ({
-                              ...current,
-                              volume: event.target.value,
-                            }))
-                          }
-                        />
-                        <input
-                          className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                          placeholder="タグ"
-                          value={editForm.tags}
-                          onChange={(event) =>
-                            setEditForm((current) => ({
-                              ...current,
-                              tags: event.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                      <input
-                        className="w-full rounded border border-[#e6e6e6] px-2 py-1"
-                        placeholder="サムネイルURL"
-                        value={editForm.imageUrl}
-                        onChange={(event) =>
-                          setEditForm((current) => ({
-                            ...current,
-                            imageUrl: event.target.value,
-                          }))
-                        }
-                      />
-                      <textarea
-                        className="min-h-[64px] w-full rounded border border-[#e6e6e6] px-2 py-1"
-                        placeholder="メモ"
-                        value={editForm.memo}
-                        onChange={(event) =>
-                          setEditForm((current) => ({
-                            ...current,
-                            memo: event.target.value,
-                          }))
-                        }
-                      />
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"

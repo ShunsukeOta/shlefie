@@ -386,17 +386,6 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             </div>
           </div>
           <div className="grid gap-1">
-            <label className="text-[12px] text-[#6b6b6b]">
-              サムネイルURL
-            </label>
-            <input
-              className="w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
-              placeholder="https://..."
-              value={imageUrl}
-              onChange={(event) => setImageUrl(event.target.value)}
-            />
-          </div>
-          <div className="grid gap-1">
             <label className="text-[12px] text-[#6b6b6b]">メモ</label>
             <textarea
               className="min-h-[88px] w-full rounded-xl border border-[#f6f6f6] px-3 py-2 text-[16px] placeholder:text-[#b0b0b0] focus:outline-none focus:ring-0 focus:border-[#dcdcdc]"
