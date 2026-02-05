@@ -182,7 +182,7 @@ export default function SummaryPage() {
       <TopBar title="まとめ" />
       <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto px-4 pt-3 pb-[84px] text-left hide-scrollbar">
         <div className="grid gap-3">
-          <div className="inline-flex items-center gap-1 rounded-full bg-[#f1f1f1] p-1">
+          <div className="inline-flex items-center gap-2">
             {[
               { key: "week", label: "1週間" },
               { key: "month", label: "1ヶ月" },
@@ -191,10 +191,10 @@ export default function SummaryPage() {
               <button
                 key={item.key}
                 type="button"
-                className={`rounded-full px-4 py-2 text-[12px] transition-colors ${
+                className={`rounded-full px-3 py-2 text-[12px] ${
                   range === item.key
-                    ? "bg-white text-[#222]"
-                    : "text-[#6b6b6b]"
+                    ? "bg-[#222] text-white"
+                    : "bg-[#f1f1f1] text-[#6b6b6b]"
                 }`}
                 onClick={() =>
                   setRange(item.key as "week" | "month" | "year")

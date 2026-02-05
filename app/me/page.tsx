@@ -5,10 +5,31 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import BottomNav from "../_components/BottomNav";
 import TopBar from "../_components/TopBar";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { useLibrary } from "../_components/LibraryProvider";
 import { auth } from "../_lib/firebase";
 import { db } from "../_lib/firebase";
+
+const makeLogCover = (title: string) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="480" viewBox="0 0 360 480">
+      <rect width="360" height="480" fill="#222222"/>
+      <rect x="28" y="28" width="304" height="424" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+      <text x="40" y="90" fill="#ffffff" font-size="28" font-family="ui-sans-serif, system-ui" font-weight="700">
+        ${title}
+      </text>
+      <text x="40" y="430" fill="rgba(255,255,255,0.6)" font-size="12" font-family="ui-sans-serif, system-ui" letter-spacing="2">
+        SHELFIE
+      </text>
+    </svg>`
+  )}`;
 
 export default function MePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -28,6 +49,8 @@ export default function MePage() {
     ""
   );
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [followCount, setFollowCount] = useState(0);
+  const [followerCount, setFollowerCount] = useState(0);
   const handleInitial = (handle.replace(/^@/, "").trim().slice(0, 1) ||
     displayName.trim().slice(0, 1) ||
     "S"
@@ -80,6 +103,22 @@ export default function MePage() {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    if (!user) return undefined;
+    const followsRef = collection(db, "users", user.uid, "follows");
+    const followersRef = collection(db, "users", user.uid, "followers");
+    const unsubFollows = onSnapshot(followsRef, (snapshot) => {
+      setFollowCount(snapshot.size);
+    });
+    const unsubFollowers = onSnapshot(followersRef, (snapshot) => {
+      setFollowerCount(snapshot.size);
+    });
+    return () => {
+      unsubFollows();
+      unsubFollowers();
+    };
+  }, [user]);
+
   const handleLogout = async () => {
     setLogoutBusy(true);
     try {
@@ -128,29 +167,50 @@ export default function MePage() {
       <TopBar
         title="マイページ"
         rightSlot={
-          <button
-            type="button"
-            aria-label="ログアウト"
-            className="grid h-9 w-9 place-items-center text-white"
-            onClick={() => setShowLogout(true)}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="flex items-center gap-1">
+            <Link
+              href="/settings"
+              aria-label="設定"
+              className="grid h-9 w-9 place-items-center text-white"
             >
-              <path d="M9 12h10" />
-              <path d="m15 8 4 4-4 4" />
-              <path d="M4 5h6" />
-              <path d="M4 19h6" />
-              <path d="M4 5v14" />
-            </svg>
-          </button>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Z" />
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3a1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+              </svg>
+            </Link>
+            <button
+              type="button"
+              aria-label="ログアウト"
+              className="grid h-9 w-9 place-items-center text-white"
+              onClick={() => setShowLogout(true)}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 12h10" />
+                <path d="m15 8 4 4-4 4" />
+                <path d="M4 5h6" />
+                <path d="M4 19h6" />
+                <path d="M4 5v14" />
+              </svg>
+            </button>
+          </div>
         }
       />
       <main className="scroll-pane mx-auto w-full max-w-[480px] flex-1 overflow-y-auto pb-[84px] hide-scrollbar">
@@ -274,40 +334,26 @@ export default function MePage() {
               </div>
             )}
             <div className="mt-2 grid grid-cols-3 gap-2 text-[12px]">
-              {[
-                { label: "フォロー", value: "0" },
-                { label: "フォロワー", value: "0" },
-                { label: "総shelf", value: `${books.length}` },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded bg-[#222] px-2 py-2 text-center text-white"
-                >
-                  <div className="font-semibold text-[14px]">{item.value}</div>
-                  <div className="text-[#d9d9d9]">{item.label}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3">
               <Link
-                className="flex items-center justify-between rounded border border-[#e6e6e6] bg-white px-3 py-3 text-[14px] text-[#222]"
-                href="/settings"
-                aria-label="設定"
+                href="/connections?tab=following"
+                className="rounded bg-[#222] px-2 py-2 text-center text-white"
+                aria-label="フォロー一覧"
               >
-                <span>設定</span>
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
+                <div className="font-semibold text-[14px]">{followCount}</div>
+                <div className="text-[#d9d9d9]">フォロー</div>
               </Link>
+              <Link
+                href="/connections?tab=followers"
+                className="rounded bg-[#222] px-2 py-2 text-center text-white"
+                aria-label="フォロワー一覧"
+              >
+                <div className="font-semibold text-[14px]">{followerCount}</div>
+                <div className="text-[#d9d9d9]">フォロワー</div>
+              </Link>
+              <div className="rounded bg-[#222] px-2 py-2 text-center text-white">
+                <div className="font-semibold text-[14px]">{books.length}</div>
+                <div className="text-[#d9d9d9]">総shelf</div>
+              </div>
             </div>
             <div className="mt-3">
               <h2 className="text-[14px] font-semibold">最近のログ</h2>
@@ -317,23 +363,30 @@ export default function MePage() {
                     ここに最近のログが表示されます。
                   </div>
                 ) : (
-                  recentLogs.map((log) => (
-                    <div
-                      key={log.id}
-                      className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
-                    >
+                  recentLogs.map((log) => {
+                    const logFallback =
+                      log.fallbackCover || makeLogCover(log.title || "Book");
+                    return (
+                      <div
+                        key={log.id}
+                        className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[#e6e6e6] py-2"
+                      >
                       <div className="relative">
-                        <div className="aspect-[3/4] w-[56px] overflow-hidden bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]">
-                          {log.imageUrl ? (
-                            <img
-                              src={log.imageUrl}
-                              alt={`${log.title} カバー`}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]" />
-                          )}
-                        </div>
+                      <div className="aspect-[3/4] w-[56px] overflow-hidden bg-[linear-gradient(180deg,#eeeeee,#d9d9d9)]">
+                        {log.imageUrl ? (
+                          <img
+                            src={log.imageUrl}
+                            alt={`${log.title} カバー`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={logFallback}
+                            alt={`${log.title} ダミーカバー`}
+                            className="h-full w-full object-cover"
+                          />
+                        )}
+                      </div>
                         <span
                           className={`absolute left-1 top-1 rounded-[2px] px-1 py-[2px] text-[9px] leading-none text-white ${
                             log.statusKey === "unread"
@@ -364,7 +417,8 @@ export default function MePage() {
                         </span>
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 )}
               </section>
             </div>

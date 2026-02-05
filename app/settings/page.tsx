@@ -24,7 +24,7 @@ export default function SettingsPage() {
         rightSlot={
           <Link
             className="grid h-9 w-9 place-items-center text-white"
-            href="/"
+            href="/me"
             aria-label="戻る"
           >
             <svg

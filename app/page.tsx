@@ -216,7 +216,7 @@ export default function Home() {
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
-                className="h-5 w-5 fill-current"
+                className="h-6 w-6 fill-current"
               >
                 <path
                   fillRule="evenodd"
@@ -252,7 +252,7 @@ export default function Home() {
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
-                className="h-5 w-5 fill-current"
+                className="h-6 w-6 fill-current"
               >
                 {layout === "grid-4" ? (
                   <>
@@ -295,7 +295,7 @@ export default function Home() {
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
-                className="h-5 w-5"
+                className="h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.6"

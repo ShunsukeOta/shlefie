@@ -7,7 +7,6 @@ import RegisterModalProvider from "./_components/RegisterModalProvider";
 import LibraryProvider from "./_components/LibraryProvider";
 import ServiceWorker from "./_components/ServiceWorker";
 import NetworkStatusProvider from "./_components/NetworkStatusProvider";
-import PwaDebugBadge from "./_components/PwaDebugBadge";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -59,7 +58,6 @@ export default function RootLayout({
           </NetworkStatusProvider>
         </LibraryProvider>
         <ServiceWorker />
-        <PwaDebugBadge />
       </body>
     </html>
   );

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 type TopBarProps = {
   title?: string;
@@ -12,7 +13,11 @@ export default function TopBar({ title, rightSlot }: TopBarProps) {
       style={{ backgroundColor: "#222222", paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex w-full max-w-[480px] items-center justify-between px-4 py-4 text-white">
-        <div className="flex items-center gap-2 text-[15px] font-medium tracking-[0.02em]">
+        <Link
+          href="/"
+          aria-label="本棚へ移動"
+          className="flex items-center gap-2 text-[15px] font-medium tracking-[0.02em]"
+        >
           <svg
             viewBox="0 0 24 24"
             aria-hidden="true"
@@ -24,7 +29,7 @@ export default function TopBar({ title, rightSlot }: TopBarProps) {
           </svg>
           <span>Shelfie</span>
           {title ? <span className="text-[11px] text-white/70">{title}</span> : null}
-        </div>
+        </Link>
         {rightSlot ?? <span />}
       </div>
     </header>

@@ -40,6 +40,7 @@ export type LogItem = {
   statusKey?: BookStatusKey;
   time: string;
   imageUrl?: string;
+  fallbackCover?: string;
   message: string;
   createdAt?: number;
 };
@@ -92,17 +93,11 @@ type LibraryContextValue = {
 
 const LibraryContext = createContext<LibraryContextValue | null>(null);
 
-const makeCover = (title: string, author: string, color: string) =>
+const makeCover = (title: string, author: string, color: string = "#222222") =>
   `data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="480" viewBox="0 0 360 480">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="${color}" />
-          <stop offset="1" stop-color="#111111" />
-        </linearGradient>
-      </defs>
-      <rect width="360" height="480" fill="url(#g)"/>
-      <rect x="28" y="28" width="304" height="424" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+      <rect width="360" height="480" fill="${color}"/>
+      <rect x="28" y="28" width="304" height="424" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
       <text x="40" y="90" fill="#ffffff" font-size="28" font-family="ui-sans-serif, system-ui" font-weight="700">
         ${title}
       </text>
@@ -115,7 +110,6 @@ const makeCover = (title: string, author: string, color: string) =>
     </svg>`
   )}`;
 
-const fallbackColors = ["#2c2f5a", "#1e3d5a", "#7a3b1e", "#1f4b3a", "#3c2a4d"];
 
 const statusLabel = (key: BookStatusKey) =>
   key === "unread"
@@ -198,15 +192,7 @@ export default function LibraryProvider({ children }: LibraryProviderProps) {
         const title = data.title ?? "タイトル不明";
         const author = data.author ?? "";
         const imageUrl = data.imageUrl;
-        const fallbackCover =
-          data.fallbackCover ||
-          (!imageUrl
-            ? makeCover(
-                title,
-                author,
-                fallbackColors[hashString(docSnap.id) % fallbackColors.length]
-              )
-            : undefined);
+        const fallbackCover = !imageUrl ? makeCover(title, author) : undefined;
         return {
           id: docSnap.id,
           title,
@@ -238,13 +224,19 @@ export default function LibraryProvider({ children }: LibraryProviderProps) {
         const data = docSnap.data() as LogDoc;
         const createdAt =
           typeof data.createdAt === "number" ? data.createdAt : undefined;
+        const title = data.title ?? "";
+        const imageUrl = data.imageUrl;
+        const fallbackCover = imageUrl
+          ? undefined
+          : makeCover(title || "Book", "");
         return {
           id: docSnap.id,
-          title: data.title ?? "",
+          title,
           status: data.status,
           statusKey: data.statusKey,
           time: data.time ?? "",
-          imageUrl: data.imageUrl,
+          imageUrl,
+          fallbackCover,
           message: data.message ?? "",
           createdAt,
         };
@@ -275,13 +267,7 @@ export default function LibraryProvider({ children }: LibraryProviderProps) {
     const author = input.author?.trim() ?? "";
     const fallbackCover =
       input.fallbackCover ||
-      (!input.imageUrl
-        ? makeCover(
-            title,
-            author,
-            fallbackColors[now.getTime() % fallbackColors.length]
-          )
-        : undefined);
+      (!input.imageUrl ? makeCover(title, author) : undefined);
 
     try {
       await addDoc(
